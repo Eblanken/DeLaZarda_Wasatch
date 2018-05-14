@@ -38,6 +38,11 @@ OPTIONS = {
 # when asked by the user
 #
 def drawLine(mainWindow):
+    # Creates main window
+    drawLinePrompt = TopLevel()
+    drawLinePrompt.title("Draw a Line")
+    # Options for end positions
+    # Draws the line
 
 #
 # Opens a command window for drawing a fiducial hash mark

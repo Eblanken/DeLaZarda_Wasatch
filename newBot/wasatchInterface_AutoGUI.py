@@ -31,9 +31,12 @@ class WasatchInterface_AutoGUI(WasatchInterface_Abstract):
     # Attempts to reestablish connection with the microscope, returns true if
     # succesful false otherwise
     def reconnectToMicroscope(self):
-        if(!currentlyConnected)
-        for i in range(1, recconectionAttempts)
-            
+        if(!pingMicroscope())
+            for i in range(1, recconectionAttempts)
+                if(pingMicroscope())
+                    return True
+            return False
+        return True
 
 
     # Sends a serial command to the Wasatch Microscope after 'time' in milliseconds
@@ -42,6 +45,11 @@ class WasatchInterface_AutoGUI(WasatchInterface_Abstract):
         # all GUI commands internally feature timer safety
 
     #------------------- Private Members ---------------
+
+    #
+    # This function attempts to ping the microscope
+    #
+    def _pingMicroscope():
 
     __currentlyConnected
     __screenWidth
