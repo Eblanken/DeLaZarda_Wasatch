@@ -1,0 +1,10 @@
+Current tasks that need to be completed
+to build a working interface:
+
+1). Finish the TKLinter GUI
+
+2). Finish PyAutoGUI
+
+3). Finish AutoGUI interface
+
+4). Finish DirectSerial interface

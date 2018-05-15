@@ -32,7 +32,7 @@ class WasatchInterface_AutoGUI(WasatchInterface_Abstract):
     # succesful false otherwise
     def reconnectToMicroscope(self):
         if(!pingMicroscope())
-            for i in range(1, recconectionAttempts)
+            for i in range(1, reconectionAttempts)
                 if(pingMicroscope())
                     return True
             return False
