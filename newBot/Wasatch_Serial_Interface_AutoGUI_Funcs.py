@@ -39,13 +39,13 @@ def findsetupwin():
 #
 def setupinput():
     print("Search for inputbox...")
-    r =None
+    r = None
     timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/setupinput.png',grayscale=False)
             if r is not None:
-                homex,homey = pyautogui.center(r)
-                pyautogui.click(homex,homey)
+                homex, homey = pyautogui.center(r)
+                pyautogui.click(homex, homey)
                 return True
             r = pyautogui.locateOnScreen('pngs/setupinput2.png',grayscale=False)
             if r is not None:
@@ -82,10 +82,10 @@ def findsparkoctwin():
             if r is not None:
                 homex,homey = pyautogui.center(r)
                 pyautogui.click(homex,homey)
-                return true
+                return True
             if time.time() > timeout:
                 print("Failed to find the Spark OCT window.\n");
-                return false;
+                return False
 
 #
 # Clicks the update button on the sparkOCT GUI menu.
@@ -93,7 +93,7 @@ def findsparkoctwin():
 # Returns true if succesful, false otherwise.
 #
 def clickupdate():
-    r =None
+    r = None
     timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/update.png',grayscale=False)
@@ -102,7 +102,7 @@ def clickupdate():
                 pyautogui.click(homex,homey)
                 pyautogui.click(homex,homey)
                 pyautogui.click(homex,homey)
-                return true
+                return True
             if time.time() > timeout:
                 print("Failed to find the update button.");
                 return False
@@ -113,8 +113,7 @@ def clickupdate():
 # Returns true if succesful, false otherwise.
 #
 def findimagetab():
-
-    r =None
+    r = None
     timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/OCTImage.png',grayscale=False)
