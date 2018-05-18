@@ -1,3 +1,4 @@
+# TODO: Get error checking to work on inputs.
 #
 # File: Wasatch_Controller_GUIObjects
 # ------------------------------
@@ -27,24 +28,32 @@ class FloatEntry(tkinter.Entry):
         tkinter.Entry.__init__(self, master, textvariable = self.var, **kwargs)
         self.var.trace('w', self.validate)
 
-    def validate(self, *args):
+    def __isFloat(self):
         try:
             float(self.get())
         except:
-            self.delete(len(self.get()) - 1)
+            return False;
+        return True;
+
+    def validate(self, *args):
+        while not self.isFloat():
+            if float(self.get()) >= 0:
+                self.delete(len(self.get()) - 1)
+            else:
+                self.var = tkinter.StringVar(master, "0.0")
 
 #
+# This class requires that the user enter a percentage between 0 and 100
 #
-#
-class PercentageEntry(tkinter.Entry):
+class PercentageEntry(FloatEntry):
     def __init__(self, master = None, **kwargs):
-        self.var = tkinter.StringVar(master, "0.00")
+        self.var = tkinter.StringVar(master, "0.0")
         tkinter.Entry.__init__(self, master, textvariable = self.var, **kwargs)
         self.var.trace('w', self.validate)
 
-    def validate(self, *args):
-        while (len(self.get() > 0): # TODO seems to only run once
-            try:
-                float(self.get())
-            except:
+    def validate(self):
+        while not self.isFloat() or float(self.get()) > 100 or float(self.get()) < 0:
+            if float(self.get()) >= 0:
                 self.delete(len(self.get()) - 1)
+            else:
+                self.var = tkinter.StringVar(master, "0.0")

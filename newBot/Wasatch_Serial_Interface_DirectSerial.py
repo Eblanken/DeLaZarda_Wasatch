@@ -1,3 +1,4 @@
+# TODO everything.
 #
 # File: WasatchInterface_DirectSerial
 # ------------------------------
@@ -9,7 +10,7 @@
 # This class enables communication with the Wasatch microscope
 # by directly accessing serial communication.
 #
-# NOTES: // TODO this portion is incomplete
+# NOTES:
 # * As of right now, requires NULL MODEM to work
 # * Setup:
 #   * Set up null modem
@@ -25,7 +26,7 @@ import WasatchInterface_Abstract
 from wasatchGUISearchfuncs import *
 
 #
-class WasatchInterface_DirectSerial(WasatchInterface_Abstract):
+class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     #-------------------- Public Members ---------------
     # Initializes communications over serial to the Wastach
     def __init__(self):

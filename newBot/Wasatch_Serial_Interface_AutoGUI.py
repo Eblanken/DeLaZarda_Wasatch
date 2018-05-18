@@ -13,16 +13,16 @@
 # * Make sure that the sparkOCT program is already running
 #
 
-import time
-import WasatchInterface_Abstract
-from wasatchInterface_AutoGUI_Funcs import *
+from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
+from Wasatch_Serial_Interface_AutoGUI_Funcs import *
 
-#
-class WasatchInterface_AutoGUI(WasatchInterface_Abstract):
+class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
+
     #-------------------- Public Members ---------------
+
     # Initializes communications over the Wasatch GUI
     def __init__(self):
-        self.currentlyConnected = self.reconnectToMicroscope();
+        self._currentlyConnected = self.reconnectToMicroscope()
 
     # Returns whether the microscope was able to establish a connection
     def connectedToMicroscope(self):
@@ -31,27 +31,46 @@ class WasatchInterface_AutoGUI(WasatchInterface_Abstract):
     # Attempts to reestablish connection with the microscope, returns true if
     # succesful false otherwise
     def reconnectToMicroscope(self):
-        if(!pingMicroscope())
-            for i in range(1, reconectionAttempts)
-                if(pingMicroscope())
-                    return True
-            return False
-        return True
+        for i in range(1, self._RECONNECTIONATTEMPTS):
+            if self._centerOnPrompt():
+                return True
+        return False
 
 
-    # Sends a serial command to the Wasatch Microscope after 'time' in milliseconds
-    # has elapsed. Returns a bool true if succesful and fale if failed.
-    def sendCommand(self, command, time):
-        # all GUI commands internally feature timer safety
+    # Sends a serial command to the Wasatch Microscope
+    def sendCommand(self, command):
+        if self._centerOnPrompt():
+            pyautogui.typewrite(str)
+            pyautogui.press('enter')
+        else:
+            raise RunTimeError("AutoGUI: Failed to find the serial prompt.")
 
     #------------------- Private Members ---------------
+
+    # Constants
+    _FINDPROMPTSTEPS = {
+        findsparkoctwin,
+        findoctvolumetab,
+        findsetupwin,
+        setupinput,
+    }
+
+    _RECONNECTIONATTEMPTS = 5
+
+    # Variables
+    _currentlyConnected = False
 
     #
     # This function attempts to ping the microscope
     #
-    def _pingMicroscope():
+    # Returns true if a correct response was recorded,
+    # false otherwise.
+    #
+    def _pingMicroscope(self):
+        return True # TODO make check response
 
-    __currentlyConnected
-    __screenWidth
-    __screenHeight
-    --reconnectionAttempts = 5;
+    def _centerOnPrompt(self):
+        for step in self._FINDPROMPTSTEPS:
+            if not step():
+                return False
+        return True

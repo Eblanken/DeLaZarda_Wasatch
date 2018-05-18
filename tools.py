@@ -12,15 +12,15 @@ def convertinputtostr(startx,endx,starty,endy):
     endy_ =  endy/MAX_LENGTH*(MAX_Y-MIN_Y)*1000 + MIN_Y
     startx_ =  startx/MAX_LENGTH*(MAX_X-MIN_X)*1000 + MIN_X
     endx_ =  endx/MAX_LENGTH*(MAX_X-MIN_X)*1000 + MIN_X
-    
+
     str = "xy_ramp {} {} {} {} 1".format(startx_, endx_, starty_,endy_)
     return(str)
 
 def presstab(i):
     for i in range(i):
         pyautogui.press('tab')
-        
-def alttabcycle(i):        
+
+def alttabcycle(i):
     pyautogui.keyDown('alt')
     presstab(i)
     pyautogui.keyUp('alt')

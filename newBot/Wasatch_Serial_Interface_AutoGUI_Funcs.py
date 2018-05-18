@@ -6,7 +6,7 @@ import numpy as np
 
 #---------------------------- Constants ----------------------------------------
 
-CONST_DELAYTIMEOUTOUT = 5
+DELAYTIMEOUT = 5
 
 #---------------------- Function Definitions -----------------------------------
 
@@ -16,7 +16,7 @@ CONST_DELAYTIMEOUTOUT = 5
 def findsetupwin():
     pyautogui.moveTo(697, 1074)
     r = None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             x,y=np.random.randint(5,size=2)
             pyautogui.moveTo(684+x, 1076+y)
@@ -40,7 +40,7 @@ def findsetupwin():
 def setupinput():
     print("Search for inputbox...")
     r =None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/setupinput.png',grayscale=False)
             if r is not None:
@@ -62,7 +62,7 @@ def setupinput():
                 homex,homey = pyautogui.center(r)
                 pyautogui.click(homex,homey)
                 return True
-            if time.time() > timeout
+            if time.time() > timeout:
                 printf("Failed to find the input box in setup.");
                 return False
 
@@ -74,7 +74,7 @@ def findsparkoctwin():
     pyautogui.moveTo(697, 1078)
     pyautogui.moveTo(697, 1074)
     r = None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             x,y=np.random.randint(5,size=2)
             pyautogui.moveTo(684+x, 1076+y)
@@ -94,7 +94,7 @@ def findsparkoctwin():
 #
 def clickupdate():
     r =None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/update.png',grayscale=False)
             if r is not None:
@@ -115,7 +115,7 @@ def clickupdate():
 def findimagetab():
 
     r =None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/OCTImage.png',grayscale=False)
             if r is not None:
@@ -145,14 +145,15 @@ def pressStop(delayTime):
     r = None
     if delayTime == None:
         delayTime = 0
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     timeStop = time.time() + delayTime;
     while r is None:
             r = pyautogui.locateOnScreen('pngs/stop.png',grayscale=False)
             if r is not None:
                 homex,homey = pyautogui.center(r)
                 printf("Ready to stop.")
-                while(time.time() < timeStop)
+                while(time.time() < timeStop):
+                    a = 1
                 pyautogui.click(homex,homey)
                 return True
             if time.time() > timeout:
@@ -166,7 +167,7 @@ def pressStop(delayTime):
 #
 def findlive():
     r = None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/live.png',grayscale=False)
             if r is not None:
@@ -186,7 +187,7 @@ def findlive():
 #
 def findoctvolumetab():
     r = None
-    timeout = time.time() + CONST_DELAYTIMEOUT
+    timeout = time.time() + DELAYTIMEOUT
     while r is None:
             r = pyautogui.locateOnScreen('pngs/octvolume1.png',grayscale=False)
             if r is not None:

@@ -1,5 +1,5 @@
 # This is the abstract base class for all Wasatch interface classes
-class WasatchInterface_Abstract:
+class Wasatch_Serial_Interface_Abstract:
     #-------------------- Public Members ---------------
 
     # Initializes class and establishes serial with Wasatch
@@ -14,6 +14,6 @@ class WasatchInterface_Abstract:
     def reconnectToMicroscope(self):
         raise NotImplementedError("Subclass for Wasatch Interface must have its own reconnection.")
 
-    # Sends a serial command to the Wastach
-    def sendCommand(self, command):
+    # Sends a serial command to the Wastach after 'time' milliseconds
+    def sendCommand(self, command, time):
         raise NotImplementedError("Subclass for Wasatch Interface must have its own command method.")

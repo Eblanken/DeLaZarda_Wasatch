@@ -1,7 +1,8 @@
+# TODO: basic conversions
 #
 # File: WasatchInterface_MicroscopeSettings
 # ------------------------------
-# Author: Erick Blankenberg
+# Author: Erick Blankenberg, based off of work from Edwin
 # Date: 5/12/2018
 #
 # Description:
@@ -12,19 +13,39 @@
 
 #---------------------------- Constants ----------------------------------------
 
-MSFORMM 1;
+USFORMM = 1
+# Borrowed from Edwin's code, Wasatch units seem to be roughly 2093 per mm
+MIN_Y = 3492
+MAX_Y = 24418
+MIN_X = 5081
+MAX_X = 26032
+MAX_LENGTH = 9566
+# Experimentaly the total reach of the beam is roughly 10mm in either direction
+MM_Y = 10 # TODO get more accurate values.
+MM_X = 10
 
 # ---------------------- Function Definitions ----------------------------------
 
 #
-# Converts desired mm to Wasatch Units
+# Converts desired point in mm to wasatch units. Good for about 0.478 microns
+# but there seems to be issues where the laser goes over etc. and is pretty
+# wide?
 #
-def mmToWasatch(inputVal):
-
+# InputPoints is assumed to be a tuple of size 2 whose
+# values are (x, y) mm.
+#
+# The function returns a tuple with the arguments converted
+# to mm.
+#
+def WConvert_FromMM(inputPoint):
+    val = 0, 0
+    val[0] = (inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X
+    val[1] = (inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y
     return val
 
+# TODO
+# Calculates exposure time from distance for maximum bleaching
+# in microseconds.
 #
-# Calculates exposure time from distance for bleaching
-#
-def exposureTime(inputDistance):
-    return MSFORMM * inputDistance
+def WConvert_BleachExposureTime(inputDistance):
+    return USFORMM * inputDistance
