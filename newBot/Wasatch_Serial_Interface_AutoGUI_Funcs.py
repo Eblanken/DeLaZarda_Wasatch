@@ -31,7 +31,7 @@ def findsetupwin():
                 pyautogui.click(homex,homey)
                 return True
             if time.time() > timeout:
-                printf("Failed to find the setup window.");
+                print("Failed to find the setup window.");
                 return False
 
 #
@@ -63,7 +63,7 @@ def setupinput():
                 pyautogui.click(homex,homey)
                 return True
             if time.time() > timeout:
-                printf("Failed to find the input box in setup.");
+                print("Failed to find the input box in setup.\n");
                 return False
 
 #
@@ -84,7 +84,7 @@ def findsparkoctwin():
                 pyautogui.click(homex,homey)
                 return true
             if time.time() > timeout:
-                printf("Failed to find the Spark OCT window.");
+                print("Failed to find the Spark OCT window.\n");
                 return false;
 
 #
@@ -104,7 +104,7 @@ def clickupdate():
                 pyautogui.click(homex,homey)
                 return true
             if time.time() > timeout:
-                printf("Failed to find the update button.");
+                print("Failed to find the update button.");
                 return False
 
 #
@@ -132,7 +132,7 @@ def findimagetab():
                 pyautogui.click(homex,homey)
                 return True;
             if time.time() > timeout:
-                printf("Failed to find the image tab.");
+                print("Failed to find the image tab.");
                 return false
 
 #
@@ -151,7 +151,7 @@ def pressStop(delayTime):
             r = pyautogui.locateOnScreen('pngs/stop.png',grayscale=False)
             if r is not None:
                 homex,homey = pyautogui.center(r)
-                printf("Ready to stop.")
+                print("Ready to stop.")
                 while(time.time() < timeStop):
                     a = 1
                 pyautogui.click(homex,homey)
