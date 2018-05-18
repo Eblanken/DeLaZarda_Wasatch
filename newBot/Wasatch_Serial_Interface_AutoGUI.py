@@ -26,7 +26,7 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
 
     # Returns whether the microscope was able to establish a connection
     def connectedToMicroscope(self):
-        return currentlyConnected
+        return self._currentlyConnected
 
     # Attempts to reestablish connection with the microscope, returns true if
     # succesful false otherwise
