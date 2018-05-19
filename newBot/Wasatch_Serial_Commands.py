@@ -126,7 +126,31 @@ def WCommand_WriteEEPROM(value, address):
 
 # ------- Sweep Commands:
 
-# TODO a_scans, b_scans
+#
+# Sets the number of pulse triggers per sweep of the camera. Reducing
+# this value will reduce the duration of a single sweep.
+#
+# Typical response is "ok.\n". Will respond with the current value
+# if no command is entered.
+#
+def WCommand_ScanAScans(numScans):
+    if(isinstance(numScans, int)):
+        return "a_scans %d" % (numScans)
+    else:
+        raise ValueError("Serial Error: Requested Wasatch triggers per minor sweep is invalid.")
+
+#
+# Sets the number of minor sweeps (primary sweeps) per major sweep (slower
+# orthogonal sweep for volume). Value ranges from 0 - 65534. Default is 0.
+#
+# Typical response is "ok.\n". Will respond with the current value
+# if no command is entered.
+#
+def WCommand_ScanBScans(numScans):
+    if(isinstance(numScans, int)):
+        return "b_scans %d" % (numScans)
+    else:
+        raise ValueError("Serial Error: Requested Wasatch minor sweeps per major sweep is invalid.")
 
 #
 # Sets the delay between camera pulses in microseconds.
@@ -151,7 +175,7 @@ def WCommand_ScanPulseDelay(microseconds):
 #
 def WCommand_ScanPulseDuration(microseconds):
     if(isinstance(microseconds, int)):
-        return "delay %d" % (microseconds)
+        return "pulse %d" % (microseconds)
     else:
         raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
 
@@ -165,9 +189,9 @@ def WCommand_ScanPulseDuration(microseconds):
 # All of the coordinates assumed to be in mm and
 # are converted to mm from the top left corner.
 #
-def WCommand_ScanXYRamp(startX, stopX, startY, stopY):
-    if(isinstance(startX, float) and isinstance(stopX, float) and isinstance(startY, float) and isinstance(stopY, float)):
-        return "xy_ramp %d %d %d %d" % (WConvert_FromMM(startX), WConvert_FromMM(stopX), WConvert_FromMM(startY), WConvert_FromMM(stopY))
+def WCommand_ScanXYRamp(startPoint, stopPoint):
+    if(isinstance(startPoint[0], float) and isinstance(stopPoint[0], float) and isinstance(startPoint[1], float) and isinstance(stopPoint[1], float)):
+        return "xy_ramp %d %d %d %d" % (WConvert_FromMM(startPoint)[0], WConvert_FromMM(stopPoint)[0], WConvert_FromMM(startPoint)[1], WConvert_FromMM(stopPoint)[1])
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
 

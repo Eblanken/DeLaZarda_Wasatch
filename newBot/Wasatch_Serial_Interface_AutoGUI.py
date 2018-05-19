@@ -14,7 +14,7 @@
 #
 
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
-from Wasatch_Serial_Interface_AutoGUI_Funcs import *
+from Wasatch_GUI_Commands import *
 
 class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
 
@@ -40,19 +40,17 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
     # Sends a serial command to the Wasatch Microscope
     def sendCommand(self, command):
         if self._centerOnPrompt():
-            pyautogui.typewrite(str)
-            pyautogui.press('enter')
+            WProgram_TypeString(command)
+            WProgram_TypePress('enter')
         else:
-            raise RunTimeError("AutoGUI: Failed to find the serial prompt.")
+            raise RuntimeError("AutoGUI: Failed to find the serial prompt.")
 
     #------------------- Private Members ---------------
 
     # Constants
     _FINDPROMPTSTEPS = {
-        findsparkoctwin,
-        findoctvolumetab,
-        findsetupwin,
-        setupinput,
+        WProgram_FocusSerialWin,
+        WProgram_CenterSerialPrompt
     }
 
     _RECONNECTIONATTEMPTS = 5

@@ -1,4 +1,4 @@
-# TODO get serial connection to work, maybe nicer GUI?
+# TODO maybe nicer GUI?, fiducial, verify timing
 #
 # File: WasatchInterface_Controller
 # ------------------------------
@@ -7,14 +7,9 @@
 #
 # Description:
 #
-# This class creates a GUI for a user to interact with the
-# microscope and send commands to the Wasatch Microscope.
-# This GUI impliments all of the more advanced compound functions
-# that the microscope does not already impliment as well as
-# regulate communications for standard commands.
-#
-# NOTES: See setup notes for the WasatchInterface class you are
-# using to communicate with the microscope for setup instructions.
+# This GUI implements more advanced
+# drawing and bleaching functions for
+# the Wasatch Microscope.
 #
 
 #----------------------- Imported Libraries ------------------------------------
@@ -24,13 +19,13 @@ import numpy as np
 import tkinter
 from tkinter import messagebox
 from Wasatch_Serial_Commands import *
-from Wasatch_Controller_GUIObjects import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 
 #---------------------------- Constants ----------------------------------------
+
 # Note that actual exposure times are determined from Conversions, these
-# are just preferences but should not effect the total amount of energy recieved
-# by the sample.
+# are just preferences but should not effect the total amount of energy
+# recieved by the sample.
 PULSEPERIOD = 100 # Duration of a delay-pulse pair in microseconds
 PULSESPERSWEEP = 100 # Number of pulses per sweep of the scanner
 DUTY_CYCLE = 0.75 # Percentage of on time for pulses
@@ -48,20 +43,22 @@ def bleachLine(microscopeCommand):
     doneButton = tkinter.Button(prompt, text = "Done", command = prompt.destroy)
     doneButton.pack()
     # Options for line settings
+    tkinter.Label(prompt, text = "Start X (mm)").pack()
     startXEntry = FloatEntry(prompt)
-    startYEntry = FloatEntry(prompt)
-    endXEntry = FloatEntry(prompt)
-    endYEntry = FloatEntry(prompt)
-    percentageEntry = FloatEntry(prompt)
     startXEntry.pack()
+    tkinter.Label(prompt, text = "Start Y (mm)").pack()
+    startYEntry = FloatEntry(prompt)
     startYEntry.pack()
+    tkinter.Label(prompt, text = "End X (mm)").pack()
+    endXEntry = FloatEntry(prompt)
     endXEntry.pack()
+    tkinter.Label(prompt, text = "End Y (mm)").pack()
+    endYEntry = FloatEntry(prompt)
     endYEntry.pack()
-    gapWidth.pack()
+    tkinter.Label(prompt, text = "Percentage (0 - 1)").pack()
+    percentageEntry = FloatEntry(prompt)
     percentageEntry.pack()
-    startPoint = (float(startXEntry.get()), float(startYEntry.get()))
-    stopPoint = (float(endXEntry.get()), float(endYEntry.get()))
-    goButton = tkinter.Button(prompt, text = "Go", command = lambda: executeBleachLine(microscopeCommand, startPoint, stopPoint, float(percentageEntry.get())))
+    goButton = tkinter.Button(prompt, text = "Go", command = lambda : executeBleachLine(microscopeCommand, (float(startXEntry.get()), float(startYEntry.get())), (float(endXEntry.get()), float(endYEntry.get())), float(percentageEntry.get())))
     goButton.pack()
 
 #
@@ -81,10 +78,12 @@ def executeBleachLine(microscopeCommand, startPoint, stopPoint, exposurePercenta
     microscopeCommand.sendCommand(WCommand_ScanPulseDelay(offDuration))
     microscopeCommand.sendCommand(WCommand_ScanAScans(PULSESPERSWEEP))
     # Configures path
-    microscopeCommand.sendCommand(WCommand_XYRamp(startPoint, stopPoint))
+    microscopeCommand.sendCommand(WCommand_ScanXYRamp(startPoint, stopPoint))
     # Draws the line, number of scans dependent on previous factors
-    nTimes = int(round((exposurePercentage * WConvert_BleachExposureTime(np.linalg.norm(startPoint, stopPoint))) / (2 * PULSEPERSWEEP * PULSEPERIOD)))
+    distance = ((startPoint[0] - stopPoint[0])**2 + (startPoint[1] - stopPoint[1])**2)**0.5
+    nTimes = int(round((exposurePercentage * WConvert_BleachExposureTime(distance)) / (2 * PULSESPERSWEEP * PULSEPERIOD * 10**(-6))))
     microscopeCommand.sendCommand(WCommand_ScanNTimes(nTimes))
+    time.sleep(exposurePercentage * WConvert_BleachExposureTime(distance) + 1)
 
 #
 # Opens a command window for drawing a fiducial hash mark
@@ -92,33 +91,38 @@ def executeBleachLine(microscopeCommand, startPoint, stopPoint, exposurePercenta
 #
 def bleachFiducial(microscopeCommand):
     # Creates main window
-    prompt = TopLevel()
+    prompt = tkinter.Toplevel()
     prompt.title("Bleach a Fiducial Mark")
     doneButton = tkinter.Button(prompt, text = "Done", command = prompt.destroy)
     doneButton.pack()
     # Options for line settings
+    tkinter.Label(prompt, text = "Center X (mm)").pack()
     centerXEntry = FloatEntry(prompt)
+    centerXEntry.pack()
+    tkinter.Label(prompt, text = "Center Y (mm)").pack()
     centerYEntry = FloatEntry(prompt)
-    markEntry = FloatEntry(prompt)
+    centerYEntry.pack()
+    tkinter.Label(prompt, text = "Fiducial Size (mm)").pack()
+    markWidthEntry = FloatEntry(prompt)
+    markWidthEntry.pack()
+    tkinter.Label(prompt, text = "Gap Width (mm)").pack()
     gapWidth = FloatEntry(prompt)
+    gapWidth.pack()
+    tkinter.Label(prompt, text = "Exposure Percentage (0 - 1)").pack()
     percentageEntry = FloatEntry(prompt)
-    orientationEntry = StringVar()
+    percentageEntry.pack()
+    tkinter.Label(prompt, text = "Orientation").pack()
+    orientationEntry = tkinter.StringVar()
     ORIENTATIONS = {
         ("Horizontal", "H"),
         ("Vertical", "V")
     }
-    for text, mode in MODES:
-        b = Radiobutton(prompt, text = text, variable = orientationEntry, value = mode)
-        b.pack()
-    centerXEntry.pack()
-    centerYEntry.pack()
-    markEntry.pack()
-    percentageEntry.pack()
-    centerPoint = (float(centerXEntry.get()), float(centerYEntry.get()))
-    goButton = tkinter.Button(prompt, text = "Go", command = executeBleachFiducial(microscopeCommand, centerPoint, float(markWidthEntry.get()), float(gapWidth.get()), float(percentageEntry.get()), orientationEntry.get()))
+    for curText, curMode in ORIENTATIONS:
+        tkinter.Radiobutton(prompt, text = curText, variable = orientationEntry, value = curMode).pack()
+    goButton = tkinter.Button(prompt, text = "Go", command = lambda : executeBleachFiducial(microscopeCommand, (float(centerXEntry.get()), float(centerYEntry.get())), float(markWidthEntry.get()), float(gapWidth.get()), float(percentageEntry.get()), orientationEntry.get()))
     goButton.pack()
 
-# TODO make either vertical or horizontal optional, duration
+#
 # Uses serial input to draw a hash fiducial mark centered at
 # "center" with the given width "width".
 #
@@ -136,24 +140,65 @@ def executeBleachFiducial(microscopeCommand, centerPoint, markWidth, markGapWidt
     # Draws vertical
     vLowX = centerPoint[0] - (markGapWidth / 2)
     vHighX = centerPoint[0] + (markGapWidth / 2)
-    executeBleachLine(microscopeCommand, (vLowX, startY), (vLowX, stopY), exposurePercentage)
-    executeBleachLine(microscopeCommand, (vHighX, startY), (vHighX, stopY), exposurePercentage)
+    executeBleachLine(microscopeCommand, (vLowX, boundYStart), (vLowX, boundYStop), exposurePercentage)
+    executeBleachLine(microscopeCommand, (vHighX, boundYStart), (vHighX, boundYStop), exposurePercentage)
     # Draws central
     if(orientation == "V"):
-        executeBleachLine(microscopeCommand, (centerX, startY), (centerX, stopY), exposurePercentage)
+        executeBleachLine(microscopeCommand, (centerPoint[0], boundYStart), (centerPoint[0], boundYStop), exposurePercentage)
     if(orientation == "H"):
-        executeBleachLine(microscopeCommand, (startX, centerY), (stopX, centerY), exposurePercentage)
+        executeBleachLine(microscopeCommand, (boundXStart, centerPoint[1]), (boundXStop, centerPoint[1]), exposurePercentage)
 
-
-# Dictionary for available menu options and
+# Available menu options
 OPTIONS = {
     "Bleach Line" : bleachLine,
     "Bleach Fiducial" : bleachFiducial
 }
 
+#------------------------ Class Definitions ------------------------------------
+
+#
+# Entry widget that accepts a floating point number.
+#
+# Based off of https://www.reddit.com/r/learnpython/comments/7c3edu/best_way_to_do_input_validation_on_tkinter_entry/dpmxt3i/
+#
+class FloatEntry(tkinter.Entry):
+    def __init__(self, master = None, **kwargs):
+        self.var = tkinter.StringVar(master, "0.0")
+        tkinter.Entry.__init__(self, master, textvariable = self.var, **kwargs)
+        self.var.trace('w', self.validate)
+
+    def _isFloat(self):
+        try:
+            float(self.get())
+        except:
+            return False;
+        return True;
+
+    def validate(self, *args):
+        while not self._isFloat():
+            if float(self.get()) >= 0:
+                self.delete(len(self.get()) - 1)
+            else:
+                self.var = tkinter.StringVar(master, "0.0")
+
+#
+# This entry widget requires that the user enter a percentage
+# between 0 and 100
+#
+class PercentageEntry(FloatEntry):
+    def __init__(self, master = None, **kwargs):
+        self.var = tkinter.StringVar(master, "0.0")
+        tkinter.Entry.__init__(self, master, textvariable = self.var, **kwargs)
+        self.var.trace('w', self._validate)
+
+    def _validate(self):
+        while not self.isFloat() or float(self.get()) > 100 or float(self.get()) < 0:
+            if float(self.get()) >= 0:
+                self.delete(len(self.get()) - 1)
+            else:
+                self.var = tkinter.StringVar(master, "0.0")
 
 #--------------------------- The Script ----------------------------------------
-
 
 # Opens GUI
 root = tkinter.Tk()
@@ -161,13 +206,12 @@ root.title("Wasatch Command")
 root.geometry("350x200")
 actionList = tkinter.Spinbox(root, values = list(OPTIONS.keys()))
 actionList.pack()
-goButton = tkinter.Button(root, justify = tkinter.LEFT,text = "Build", width = 25, command = lambda: OPTIONS[actionList.get()]()) # TODO get serial connnections to this
+goButton = tkinter.Button(root, justify = tkinter.LEFT,text = "Build", width = 25, command = lambda: OPTIONS[actionList.get()](microscopeCommand))
 goButton.pack()
 
 # Initializes connection with microscope
 microscopeCommand = Wasatch_Serial_Interface_AutoGUI();
 if not microscopeCommand.connectedToMicroscope():
-    tklinter.messageBox.showError("Failed to connect to microscope.");
-    goButton.state = DISABLED
+    print("Failed to connect to microscope.")
 # Starts program
 root.mainloop()

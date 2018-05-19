@@ -38,9 +38,9 @@ MM_X = 10
 # to mm.
 #
 def WConvert_FromMM(inputPoint):
-    val = 0, 0
-    val[0] = (inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X
-    val[1] = (inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y
+    string = "input is %d (x) mm and %d (y) mm" % (inputPoint[0], inputPoint[1])
+    print(string)
+    val = ((inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X, (inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
     return val
 
 # TODO
