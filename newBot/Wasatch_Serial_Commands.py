@@ -1,5 +1,5 @@
 #
-# TODO: Fill in remaining commands
+# TODO: Add more serial commands
 #
 # File: WasatchInterface_MicroscopeSettings
 # ------------------------------
@@ -116,7 +116,7 @@ def WCommand_ReadEEPROM(address):
 
 """
 #
-# TODO
+# TODO writeByte
 # Writes the byte 'byte' to the location 'address'.
 #
 # Response is ACK.
@@ -179,7 +179,7 @@ def WCommand_ScanPulseDuration(microseconds):
     else:
         raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
 
-# TODO more settings
+# TODO more scan settings
 # TODO other ramp xy function alternatives
 
 #
@@ -227,9 +227,9 @@ def WCommand_ScanStop():
 """
 # ------- Motor Commands:
 
-# TODO
+# TODO motorTopSpeed
 def WCommand_MotorSetTopSpeed():
 
-# TODO
+# TODO motorHome
 def WCommand_MotorHome():
 """

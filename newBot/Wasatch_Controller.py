@@ -1,4 +1,5 @@
-# TODO maybe nicer GUI?, fiducial, verify timing
+# TODO Controller: maybe nicer GUI?, verify timing, move constants out of
+# this file.
 #
 # File: WasatchInterface_Controller
 # ------------------------------
@@ -20,15 +21,6 @@ import tkinter
 from tkinter import messagebox
 from Wasatch_Serial_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
-
-#---------------------------- Constants ----------------------------------------
-
-# Note that actual exposure times are determined from Conversions, these
-# are just preferences but should not effect the total amount of energy
-# recieved by the sample.
-PULSEPERIOD = 100 # Duration of a delay-pulse pair in microseconds
-PULSESPERSWEEP = 100 # Number of pulses per sweep of the scanner
-DUTY_CYCLE = 0.75 # Percentage of on time for pulses
 
 # ---------------------- Function Definitions ----------------------------------
 
@@ -72,17 +64,14 @@ def bleachLine(microscopeCommand):
 #
 def executeBleachLine(microscopeCommand, startPoint, stopPoint, exposurePercentage):
     # Sets duty cycle and pulses per sweep
-    onDuration = int(round(DUTY_CYCLE * PULSEPERIOD))
-    offDuration = int(round((1 - DUTY_CYCLE) * PULSEPERIOD))
-    microscopeCommand.sendCommand(WCommand_ScanPulseDuration(onDuration))
-    microscopeCommand.sendCommand(WCommand_ScanPulseDelay(offDuration))
-    microscopeCommand.sendCommand(WCommand_ScanAScans(PULSESPERSWEEP))
+    microscopeCommand.sendCommand(WCommand_ScanPulseDuration(WConvert_PulseDuration()))
+    microscopeCommand.sendCommand(WCommand_ScanPulseDelay(WConvert_PulseDelay()))
+    microscopeCommand.sendCommand(WCommand_ScanAScans(WConvert_PulsesPerSweep()))
     # Configures path
     microscopeCommand.sendCommand(WCommand_ScanXYRamp(startPoint, stopPoint))
     # Draws the line, number of scans dependent on previous factors
     distance = ((startPoint[0] - stopPoint[0])**2 + (startPoint[1] - stopPoint[1])**2)**0.5
-    nTimes = int(round((exposurePercentage * WConvert_BleachExposureTime(distance)) / (2 * PULSESPERSWEEP * PULSEPERIOD * 10**(-6))))
-    microscopeCommand.sendCommand(WCommand_ScanNTimes(nTimes))
+    microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScans(distance, exposurePercentage)))
     time.sleep(exposurePercentage * WConvert_BleachExposureTime(distance) + 1)
 
 #

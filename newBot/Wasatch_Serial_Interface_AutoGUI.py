@@ -22,6 +22,9 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
 
     # Initializes communications over the Wasatch GUI
     def __init__(self):
+        # Boots up the program
+        WProgram_Start()
+        # Verifies connection
         self._currentlyConnected = self.reconnectToMicroscope()
 
     # Returns whether the microscope was able to establish a connection
@@ -48,11 +51,6 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
     #------------------- Private Members ---------------
 
     # Constants
-    _FINDPROMPTSTEPS = {
-        WProgram_FocusSerialWin,
-        WProgram_CenterSerialPrompt
-    }
-
     _RECONNECTIONATTEMPTS = 5
 
     # Variables
@@ -65,10 +63,7 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
     # false otherwise.
     #
     def _pingMicroscope(self):
-        return True # TODO make check response
+        return True # TODO SerialAuto: make autogui serial check ping response
 
     def _centerOnPrompt(self):
-        for step in self._FINDPROMPTSTEPS:
-            if not step():
-                return False
-        return True
+        return WProgram_CenterSerialPrompt()
