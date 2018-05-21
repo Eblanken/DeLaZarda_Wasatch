@@ -14,7 +14,6 @@
 #---------------------- Included Libraries -------------------------------------
 import pyautogui
 import time
-import numpy as np
 
 #--------------------------- Constants -----------------------------------------
 ATTEMPTS = 5
@@ -28,9 +27,17 @@ DELAY_OPENICONBAR = 2 # Windows has an animation for the bar
 # Various images that correspond to each menu item
 # for pyautogui to try to find.
 
+IMGS_MAIN_BOOTUP = {
+    'pngs/mainBootup1.png',
+    'pngs/mainBootup2.png',
+    'pngs/mainBootup3.png'
+}
+
 # Desktop icon for the app
 IMGS_MAIN_ICON  = {
-    'pngs/mainIcon1.png'
+    'pngs/mainIcon1.png',
+    'pngs/mainIcon2.png',
+    'pngs/mainIcon3.png'
 }
 
 # Target for minimized app in the taskbar
@@ -42,7 +49,8 @@ IMGS_MAIN_BARICON  = {
 # Target for main window once exposed in the taskbar
 IMGS_MAIN_BARFOCUS = {
     'pngs/mainFocus1.png',
-    'pngs/mainFocus2.png'
+    'pngs/mainFocus2.png',
+    'pngs/mainFocus3.png'
 }
 
 # Main window is already open, might be not highlighted so definitely click
@@ -72,6 +80,7 @@ IMGS_MAIN_WINDOW_BUPDATE = {
 # Advanced menu tab in the OCT App
 IMGS_MAIN_WINDOW_TADVANCED = {
     'pngs/mainTabAdvanced1.png'
+    'pngs/mainTabAdvanced2.png'
 }
 
 # Setupmode sub-menu tab in the OCT App
@@ -94,6 +103,8 @@ IMGS_MAIN_WINDOW_TOCTIMAGE = {
 # OCT image tab in the app already open, may not be highlighted so definitely click.
 IMGS_MAIN_WINDOW_TOCTImage_OPEN = {
     'pngs/mainTabOCTImageOpen1.png'
+    'pngs/mainTabOCTImageOpen2.png'
+    'pngs/mainTabOCTImageOpen3.png'
 }
 
 # OCT Volume tab in the app not opened
@@ -114,14 +125,16 @@ IMGS_SERIAL_BARFOCUS = {
     'pngs/serialFocus2.png',
     'pngs/serialFocus3.png',
     'pngs/serialFocus4.png',
-    'pngs/serialFocus5.png'
+    'pngs/serialFocus5.png',
+    'pngs/serialFocus6.png'
 }
 
 # Serial window already opened
-IMG_SERIAL_WINDOW_OPEN = {
+IMGS_SERIAL_WINDOW_OPEN = {
     'pngs/serialOpen1.png'
     'pngs/serialOpen2.png'
     'pngs/serialOpen3.png'
+    'pngs/serialOpen4.png'
 }
 
 # Serial prompt in the serial window
@@ -144,7 +157,7 @@ IMGS_SERIAL_WINDOW_PROMPT = {
 #
 def WProgram_TypeString(command, delaySeconds = 0):
     pyautogui.typewrite(command)
-    time.Sleep(delay)
+    time.sleep(delaySeconds)
     return True
 
 #
@@ -154,8 +167,8 @@ def WProgram_TypeString(command, delaySeconds = 0):
 # for 'delay' seconds.
 #
 def WProgram_TypePress(key, delaySeconds = 0):
-    pyautogui.press('enter')
-    time.Sleep(delay)
+    pyautogui.press(key)
+    time.sleep(delaySeconds)
     return True
 
 #
@@ -194,15 +207,16 @@ def WProgram_FindAndPressIcon(imageDirectoryList, numTimes = 1, delaySeconds = 0
     timeout = time.time() + DELAY_TIMEOUT
     while True:
         for image in imageDirectoryList:
-            r = pyautogui.locateOnScreen(image, grayscale = False)
-            if r is not None:
-                for press in range(0, numTimes):
-                    homex,homey = pyautogui.center(r)
-                    pyautogui.click(homex,homey)
-                time.sleep(delaySeconds)
-                return True
-            else if escapeFunction is not None:
-                backupFunction()
+            for tries in range(0, ATTEMPTS):
+                r = pyautogui.locateOnScreen(image, grayscale = False)
+                if r is not None:
+                    for press in range(0, numTimes):
+                        homex,homey = pyautogui.center(r)
+                        pyautogui.click(homex,homey)
+                    time.sleep(delaySeconds)
+                    return True
+                if backupFunction is not None:
+                    backupFunction()
         if time.time() > timeout:
             return False
 
@@ -216,10 +230,10 @@ def WProgram_FindAndPressIcon(imageDirectoryList, numTimes = 1, delaySeconds = 0
 # taskbar highlight.
 #
 def WProgram_Start():
-    currentSchedule = {
-        lambda : WProgram_FindAndPressIcon(IMGS_MAIN_BARICON, 1, DELAY_STARTUP, lambda : WProgram_TypePress(KEY_OPENICONBAR, DELAY_OPENICONBAR))
-        lambda : (WProgram_FindAndPressIcon(IMGS_MAIN_BARICON, 1, 1, lambda : WProgram_TypePress(KEY_OPENICONBAR, DELAY_OPENICONBAR)) and not WProgram_FindAndPressIcon(IMGS_MAIN_BOOTUP, 0))
-    }
+    currentSchedule = [
+        lambda : WProgram_FindAndPressIcon(IMGS_MAIN_BARICON, 1, DELAY_STARTUP, lambda : WProgram_TypePress(KEY_OPENICONBAR, DELAY_OPENICONBAR)),
+        lambda : WProgram_FindAndPressIcon(IMGS_MAIN_BARICON, 1, 1, lambda : WProgram_TypePress(KEY_OPENICONBAR, DELAY_OPENICONBAR)) and not WProgram_FindAndPressIcon(IMGS_MAIN_BOOTUP, 0)
+    ]
     print("Trying to find Spark OCT app.")
     if WProgram_RunSchedule(currentSchedule):
         return True
@@ -230,11 +244,11 @@ def WProgram_Start():
 # Returns true if the sparkOCT GUI window was found, otherwise false
 #
 def WProgram_FocusOCTWin():
-    currentSchedule = {
+    currentSchedule = [
         lambda : WProgram_Start(),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_BARFOCUS, 1),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_OPEN, 1)
-    }
+    ]
     print("Trying to open the OCT window.")
     if WProgram_RunSchedule(currentSchedule):
         return True
@@ -243,11 +257,11 @@ def WProgram_FocusOCTWin():
 
 #--------- 2d Window Commands
 def WProgram_ModeImage():
-    currentSchedule = {
+    currentSchedule = [
         lambda : WProgram_FocusOCTWin(),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TOCTIMAGE, 1),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TOCTIMAGE_OPEN, 1)
-    }
+    ]
     print("Trying to open the OCT image tab.")
     if WProgram_RunSchedule(currentSchedule):
         return True
@@ -257,11 +271,11 @@ def WProgram_ModeImage():
 #--------- Volumetric window commands
 def WProgram_ModeVolumetric():
     def WProgram_ModeImage():
-        currentSchedule = {
+        currentSchedule = [
             lambda : WProgram_FocusOCTWin(),
             lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TOCTVOLUME, 1),
             lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TOCTVOLUME_OPEN, 0)
-        }
+        ]
         print("Trying to open the OCT volumetric tab.")
         if WProgram_RunSchedule(currentSchedule):
             return True
@@ -274,13 +288,13 @@ def WProgram_ModeVolumetric():
 # Returns true if the spark debug window was initialized, false otherwise
 #
 def WProgram_StartSerial():
-    currentSchedule = {
+    currentSchedule = [
         lambda : WProgram_FocusOCTWin(),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TADVANCED, 1),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TADVANCED_SETUPMODE, 1, 1),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TOCTVOLUME, 1),
         lambda : WProgram_FindAndPressIcon(IMGS_MAIN_WINDOW_TOCTVOLUME_OPEN, 1)
-    }
+    ]
     print("Trying to open the serial window.")
     if WProgram_RunSchedule(currentSchedule):
         return True
@@ -291,11 +305,11 @@ def WProgram_StartSerial():
 # returns true if the window was found, false otherwise
 #
 def WProgram_FocusSerial():
-    currentSchedule = {
+    currentSchedule = [
         lambda : WProgram_StartSerial(),
-        lambda : (WProgram_Start() and WProgram_FindAndPressIcon(IMGS_SERIAL_BARFOCUS))
-        lambda : WProgram_FindAndPressIcon(IMGS_SERIAL_OPEN, 1)
-    }
+        lambda : (WProgram_Start() and WProgram_FindAndPressIcon(IMGS_SERIAL_BARFOCUS)),
+        lambda : WProgram_FindAndPressIcon(IMGS_SERIAL_WINDOW_OPEN)
+    ]
     print("Searching for the serial window.")
     if WProgram_RunSchedule(currentSchedule):
         return True
@@ -306,10 +320,10 @@ def WProgram_FocusSerial():
 # Returns true if the setup window input prompt was found, otherwise false
 #
 def WProgram_CenterSerialPrompt():
-    currentSchedule = {
+    currentSchedule = [
         lambda : WProgram_FocusSerial(),
-        lambda : WProgram_FindAndPressIcon(IMGS_SERIAL_PROMPT)
-    }
+        lambda : WProgram_FindAndPressIcon(IMGS_SERIAL_WINDOW_PROMPT)
+    ]
     print("Searching for the serial prompt.")
     if WProgram_RunSchedule(currentSchedule):
         return True

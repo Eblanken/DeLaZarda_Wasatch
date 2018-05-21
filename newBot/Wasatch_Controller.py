@@ -16,9 +16,8 @@
 #----------------------- Imported Libraries ------------------------------------
 
 import time
-import numpy as np
 import tkinter
-from tkinter import messagebox
+
 from Wasatch_Serial_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 

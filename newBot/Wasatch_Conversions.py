@@ -60,8 +60,8 @@ def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, puls
     normalRequiredTime = (USFORMM * distance) / normalizedDutyCycle
     normalRequiredPasses = normalRequiredTime / (2 * pulsesPerSweep * pulsePeriod)
     # Applies exposure percentage
-    nTimes = int(round((exposurePercentage * normalRequiredPasses))
-    return int(round(exposurePercentage * totalRuns))
+    nTimes = int(round((exposurePercentage * normalRequiredPasses)))
+    return nTimes
 
 #
 # Calculates duration of pulse for the given duty cycle.
