@@ -1,4 +1,4 @@
-# TODO everything.
+# TODO Interface_Serial: everything.
 #
 # File: WasatchInterface_DirectSerial
 # ------------------------------
@@ -22,8 +22,10 @@
 #
 
 import pyautogui
+import pyserial
 import WasatchInterface_Abstract
-from wasatchGUISearchfuncs import *
+from Wasatch_Serial_Commands import *
+
 
 #
 class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
@@ -31,10 +33,35 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     # Initializes communications over serial to the Wastach
     def __init__(self):
 
+    def connectedToMicroscope(self):
+        return _currentlyConnected
+
+    # Attempts to reestablish connection with the microscope
+    def reconnectToMicroscope(self):
+        for i in range(0, _RECONNECTIONATTEMPTS):
+            if self.findPort():
+                return True
+        return False
+
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
     def sendCommand(self, command, time):
+        self.serialPort.
 
     #------------------- Private Members ---------------
 
-    __screenWidth
-    __screenHeight
+    # Functions
+    def _findPort(self):
+        portList = serial.tools.list_ports.comports()
+        for currentPort in portList:
+            self.serialPort = serial.Serial(currentPort.device)
+            self.serialPort.write(WCommand_Ping().encode('utf-8'))
+            if(chr(self.serialPort.readByte()) == 'A'):
+                return True
+        return False:
+
+    # Variables
+    _currentlyConnected = False
+    _serialPort # Object for serial comms
+
+    # Constants
+    _RECONNECTIONATTEMPTS = 5

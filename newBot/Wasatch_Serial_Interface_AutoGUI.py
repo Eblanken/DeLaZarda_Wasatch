@@ -36,6 +36,7 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
     def reconnectToMicroscope(self):
         for i in range(1, self._RECONNECTIONATTEMPTS):
             if self._centerOnPrompt():
+                self._currentlyConnected = True
                 return True
         return False
 
