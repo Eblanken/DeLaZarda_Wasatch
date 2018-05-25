@@ -32,7 +32,7 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     #-------------------- Public Members ---------------
     # Initializes communications over serial to the Wastach
     def __init__(self):
-
+        reconnectToMicroscope()
     def connectedToMicroscope(self):
         return _currentlyConnected
 
@@ -40,12 +40,13 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     def reconnectToMicroscope(self):
         for i in range(0, _RECONNECTIONATTEMPTS):
             if self.findPort():
+                _currentlyConnected = True;
                 return True
         return False
 
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
-    def sendCommand(self, command, time):
-        self.serialPort.
+    def sendCommand(self, command):
+        self.serialPort.write(command.encode('utf-8'))
 
     #------------------- Private Members ---------------
 
