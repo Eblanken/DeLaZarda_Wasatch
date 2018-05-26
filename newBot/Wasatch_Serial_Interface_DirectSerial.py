@@ -22,8 +22,10 @@
 #
 
 import pyautogui
-import pyserial
-import WasatchInterface_Abstract
+import io
+import serial
+from serial.tools import list_ports
+from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_Serial_Commands import *
 
 
@@ -32,37 +34,50 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     #-------------------- Public Members ---------------
     # Initializes communications over serial to the Wastach
     def __init__(self):
-        reconnectToMicroscope()
+        self.reconnectToMicroscope()
+        
     def connectedToMicroscope(self):
-        return _currentlyConnected
+        return self._currentlyConnected
 
     # Attempts to reestablish connection with the microscope
     def reconnectToMicroscope(self):
-        for i in range(0, _RECONNECTIONATTEMPTS):
-            if self.findPort():
-                _currentlyConnected = True;
-                return True
+        if self._findPort():
+            self._currentlyConnected = True;
+            return True
         return False
 
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
     def sendCommand(self, command):
-        self.serialPort.write(command.encode('utf-8'))
+        self.serialPort.write(("%s\n" % command).encode('utf-8'))
 
     #------------------- Private Members ---------------
 
     # Functions
     def _findPort(self):
-        portList = serial.tools.list_ports.comports()
-        for currentPort in portList:
-            self.serialPort = serial.Serial(currentPort.device)
-            self.serialPort.write(WCommand_Ping().encode('utf-8'))
-            if(chr(self.serialPort.readByte()) == 'A'):
-                return True
-        return False:
+        portList = list_ports.comports()
+        print('Looking for serial ports:')
+        for index in range(0, self._RECONNECTIONATTEMPTS):
+            for currentPort in portList:
+                try:
+                    self.serialPort = serial.Serial(currentPort.device)
+                    self.serialPort.close()
+                    self.serialPort.open()
+                except:
+                    continue
+                self.serialPort.timeout = 1.0
+                self.sendCommand(WCommand_Ping())
+                val = self.serialPort.read();
+                if(val == b'A'):
+                    print('Found the port for the galvos.')
+                    self.sendCommand(WCommand_ScanStop())
+                    print('Galvo connection initialized.')
+                    return True
+        print('No serial ports found for the galvo.')
+        return False
 
     # Variables
     _currentlyConnected = False
-    _serialPort # Object for serial comms
+    _serialPort = None # Object for serial comms
 
     # Constants
     _RECONNECTIONATTEMPTS = 5

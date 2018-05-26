@@ -20,6 +20,7 @@ import tkinter
 
 from Wasatch_Serial_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
+from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
 
 # ---------------------- Function Definitions ----------------------------------
 
@@ -71,7 +72,7 @@ def executeBleachLine(microscopeCommand, startPoint, stopPoint, exposurePercenta
     # Draws the line, number of scans dependent on previous factors
     distance = ((startPoint[0] - stopPoint[0])**2 + (startPoint[1] - stopPoint[1])**2)**0.5
     microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScans(distance, exposurePercentage)))
-    time.sleep(exposurePercentage * WConvert_BleachExposureTime(distance) + 1)
+    time.sleep(exposurePercentage * WConvert_BleachExposureTimeSecs(distance) + 1)
 
 #
 # Opens a command window for drawing a fiducial hash mark
@@ -123,11 +124,21 @@ def executeBleachFiducial(microscopeCommand, centerPoint, markWidth, markGapWidt
     # Draws horizontal
     hLowY = centerPoint[1] - (markGapWidth / 2)
     hHighY = centerPoint[1] + (markGapWidth / 2)
+    print("Horizontal lines:")
+    print(hLowY)
+    print(hHighY)
+    print(boundXStart)
+    print(boundXStop)
     executeBleachLine(microscopeCommand, (boundXStart, hLowY), (boundXStop, hLowY), exposurePercentage)
     executeBleachLine(microscopeCommand, (boundXStart, hHighY), (boundXStop, hHighY), exposurePercentage)
     # Draws vertical
     vLowX = centerPoint[0] - (markGapWidth / 2)
     vHighX = centerPoint[0] + (markGapWidth / 2)
+    print("Vertical lines:")
+    print(vLowX)
+    print(vHighX)
+    print(boundYStart)
+    print(boundYStop)
     executeBleachLine(microscopeCommand, (vLowX, boundYStart), (vLowX, boundYStop), exposurePercentage)
     executeBleachLine(microscopeCommand, (vHighX, boundYStart), (vHighX, boundYStop), exposurePercentage)
     # Draws central
@@ -192,13 +203,13 @@ class PercentageEntry(FloatEntry):
 root = tkinter.Tk()
 root.title("Wasatch Command")
 root.geometry("350x200")
-actionList = tkinter.Spinbox(root, values = list(OPTIONS.keys()))
+actionList = tkinter.Spinbox(root, values = tuple(OPTIONS.keys()))
 actionList.pack()
 goButton = tkinter.Button(root, justify = tkinter.LEFT,text = "Build", width = 25, command = lambda: OPTIONS[actionList.get()](microscopeCommand))
 goButton.pack()
 
 # Initializes connection with microscope
-microscopeCommand = Wasatch_Serial_Interface_AutoGUI();
+microscopeCommand = Wasatch_Serial_Interface_DirectSerial();
 if not microscopeCommand.connectedToMicroscope():
     print("Failed to connect to microscope.")
 # Starts program

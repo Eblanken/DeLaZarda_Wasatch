@@ -89,5 +89,5 @@ def WConvert_PulsesPerSweep():
 # Returns the number of seconds required to bleach a line of the given
 # length.
 #
-def WConvert_BleachExpsureTimeSecs(distance):
+def WConvert_BleachExposureTimeSecs(distance):
     return USFORMM * distance * 10**-6
