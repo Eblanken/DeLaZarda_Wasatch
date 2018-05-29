@@ -27,7 +27,7 @@ microscopeCommand = Wasatch_Serial_Interface_DirectSerial()
 #GCommand_BleachLine(microscopeCommand, (1.0, 1.0), (1.0, 5.0), 0.5)
 
 #(x,y) in mm, args are (module, center, length of mark, seperation b/ outermost pairs, exposure per line in (s), "V" is vertical, "H" is horizontal)
-GCommand_BleachFiducial(microscopeCommand, (5.0, 5.0), 3.0, 1.5, 1.0, "V")
+GCommand_BleachFiducial(microscopeCommand, (5.0, 5.0), 3.0, 0.4, 0.4, "V")
 
 #--> Closes connection:
 microscopeCommand.close()

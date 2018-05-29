@@ -22,14 +22,14 @@ import math
 USFORMM = 3000
 
 # Borrowed from Edwin's code, Wasatch units seem to be roughly 2093 per mm
-MIN_Y = 3492
-MAX_Y = 24418
-MIN_X = 5081
-MAX_X = 26032
-MAX_LENGTH = 9566
+MIN_Y = 3492.0
+MAX_Y = 24418.0
+MIN_X = 5081.0
+MAX_X = 26032.0
+MAX_LENGTH = 9566.0
 # Experimentaly the total reach of the beam is roughly 10mm in either direction
-MM_Y = 10
-MM_X = 10
+MM_Y = 10.0
+MM_X = 10.0
 
 # Note that actual total exposure times are determined from USFORMM, these
 # are just preferences but should not effect the total amount of energy
