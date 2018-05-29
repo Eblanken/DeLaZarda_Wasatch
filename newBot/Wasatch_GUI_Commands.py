@@ -1,5 +1,6 @@
 #
-# TODO GUI: BUGGED schedules + schedule reader, Add more GUI commands, check startSerial, verify click order
+# TODO GUI_Commands: BUGGED schedules + schedule reader, check startSerial, verify click order
+# COMBAK GUI_Commands: add more commands
 #
 # File: WasatchInterface_MicroscopeSettings
 # ------------------------------

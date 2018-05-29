@@ -1,4 +1,6 @@
-# TODO: Converter: Get more accurate values for distances, get standard laser settings
+# TODO: Conversions: Bleachpercentage overhaul, use default values for conversions
+# COMBAK Conversions: Standardize documentation. Add more conversions.
+#
 # File: WasatchInterface_MicroscopeSettings
 # ------------------------------
 # Author: Erick Blankenberg, based off of work from Edwin
@@ -50,9 +52,26 @@ def WConvert_FromMM(inputPoint):
     return val
 
 #
+# Description:
+#   Returns the number of scans from the required duration
+#
+# Parameters:
+#   'numSeconds'     (float) How long the scan should last in seconds.
+#   'pulsePeriod'    (int)   Period of a single pulse in microseconds.
+#   'pulsesPerSweep' (int)   Number of pulses in a primary scan.
+#
+# Returns:
+#   Integer number of scans required.
+#
+def WConvert_NumScansFromSecs(numSeconds, pulsePeriod = PULSEPERIOD, pulseCount = PULSESPERSWEEP):
+    return int(ceil((float(numSeconds)*(10**-6)) / (PULSEPERIOD * PULSESPERSWEEP)))
+
+#
 # Determines the number of complete scans required to achieve
 # the desired exposure percentage with the given duty cycle,
 # and period of the pulse.
+#
+# TODO Conversions: Exposure overhaul (may be bugged)
 #
 def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, pulsePeriod = PULSEPERIOD, pulsesPerSweep = PULSESPERSWEEP):
     # Calculates scans for full exposure
@@ -65,17 +84,21 @@ def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, puls
     return nTimes
 
 #
-# Calculates duration of pulse for the given duty cycle.
+# Description:
+#   Calculates duration of pulse for the given duty cycle.
 #
-# Returns the pulse length in microseconds.
+# Returns:
+#   Returns the pulse length in microseconds.
 #
 def WConvert_PulseDuration(dutyCycle = DUTY_CYCLE):
     return int(round(dutyCycle * PULSEPERIOD))
 
 #
-# Calculates delay between pulses for the given duty cycle.
+# Description:
+#   Calculates delay between pulses for the given duty cycle.
 #
-# Returns the delay between pulses in  microseconds.
+# Returns:
+#   The delay between pulses in  microseconds.
 #
 def WConvert_PulseDelay(dutyCycle = DUTY_CYCLE):
     return int(round((1 - DUTY_CYCLE) * PULSEPERIOD))
@@ -89,6 +112,8 @@ def WConvert_PulsesPerSweep():
 #
 # Returns the number of seconds required to bleach a line of the given
 # length.
+#
+# TODO: Conversions: Exposure overhaul
 #
 def WConvert_BleachExposureTimeSecs(distance):
     return USFORMM * distance * 10**-6

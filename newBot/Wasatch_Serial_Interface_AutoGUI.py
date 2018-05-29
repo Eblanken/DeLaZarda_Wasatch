@@ -5,16 +5,16 @@
 # Date: 5/12/2018
 #
 # Description:
+#   This class enables serial communication by
+#   directly manipulating the GUI.
 #
-# This class enables communication with the Wasatch microscope
-# by directly accessing the Spark GUI.
-#
-# NOTES:
-# * Make sure that the sparkOCT program is already running
-#
+
+#----------------------- Imported Libraries ------------------------------------
 
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_GUI_Commands import *
+
+#------------------------ Class Definition -------------------------------------
 
 class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
 
@@ -35,21 +35,21 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
     # succesful false otherwise
     def reconnectToMicroscope(self):
         for i in range(1, self._RECONNECTIONATTEMPTS):
-            if self._centerOnPrompt():
+            if WProgram_CenterSerialPrompt():
                 self._currentlyConnected = True
                 return True
         return False
 
-
     # Sends a serial command to the Wasatch Microscope
-    def sendCommand(self, command):
-        if self._centerOnPrompt():
+    def sendCommand(self, command, time):
+        if WProgram_CenterSerialPrompt():
             WProgram_TypeString(command)
             WProgram_TypePress('enter')
+
         else:
             raise RuntimeError("AutoGUI: Failed to find the serial prompt.")
-    
-    # Closes the connection to the microscope, in this case nothing. 
+
+    # Closes the connection to the microscope, in this case nothing.
     def close(self):
         pass
 
@@ -68,7 +68,4 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
     # false otherwise.
     #
     def _pingMicroscope(self):
-        return True # TODO SerialAuto: make autogui serial check ping response
-
-    def _centerOnPrompt(self):
-        return WProgram_CenterSerialPrompt()
+        return True # TODO Interface_AutoGUI: make autogui serial check ping response

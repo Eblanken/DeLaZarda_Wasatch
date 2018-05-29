@@ -1,4 +1,5 @@
-# TODO Interface_Serial: everything.
+# TODO Interface_DirectSerial: allow the wasatch program to use null modem
+# COMBAK Interface_DirectSerial: Standardize documentation
 #
 # File: WasatchInterface_DirectSerial
 # ------------------------------
@@ -10,7 +11,7 @@
 # This class enables communication with the Wasatch microscope
 # by directly accessing serial communication.
 #
-# NOTES:
+# NOTES: # ignore until bypass has been implimented
 # * As of right now, requires NULL MODEM to work
 # * Setup:
 #   * Set up null modem
@@ -21,21 +22,26 @@
 #     has established communications with the "microscope" (really this program)
 #
 
+#----------------------- Imported Libraries ------------------------------------
+
 import pyautogui
 import io
 import serial
+import select
 from serial.tools import list_ports
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_Serial_Commands import *
 
+#------------------------ Class Definition -------------------------------------
 
-#
 class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
+
     #-------------------- Public Members ---------------
+
     # Initializes communications over serial to the Wastach
     def __init__(self):
         self.reconnectToMicroscope()
-        
+
     def connectedToMicroscope(self):
         return self._currentlyConnected
 
@@ -49,7 +55,7 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
     def sendCommand(self, command):
         self.serialPort.write(("%s\n" % command).encode('utf-8'))
-      
+
     # Safely closes the connection to the microscope.
     def close(self):
         self.serialPort.close()
@@ -60,7 +66,7 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     def _findPort(self):
         portList = list_ports.comports()
         print('Looking for serial ports:')
-        for index in 
+        for index in
         range(0, self._RECONNECTIONATTEMPTS):
             for currentPort in portList:
                 try:
@@ -77,6 +83,8 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
                     self.sendCommand(WCommand_ScanStop())
                     print('Galvo connection initialized.')
                     return True
+                else:
+                    self.serialPort.close()
         print('No serial ports found for the galvo.')
         return False
 

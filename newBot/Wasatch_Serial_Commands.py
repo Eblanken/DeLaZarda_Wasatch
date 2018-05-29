@@ -1,5 +1,5 @@
 #
-# TODO: Add more serial commands
+# COMBAK Serial_Commands: add more commands, standardize documentation.
 #
 # File: WasatchInterface_MicroscopeSettings
 # ------------------------------
@@ -7,12 +7,12 @@
 # Date: 5/12/2018
 #
 # Description:
-#
-# These methods take in parameters for serial commands and return a complete
-# string that can be entered into the terminal. Units are in mm and seconds.
+#   These methods take in parameters for serial commands and return a complete
+#   string that can be entered into the terminal. Units are in mm and seconds.
 #
 
 #---------------------- Included Libraries -------------------------------------
+
 from Wasatch_Conversions import *
 
 #--------------------- Function Definitions ------------------------------------
@@ -52,7 +52,7 @@ def WCommand_Ping():
     return "ping"
 
 #
-# TODO find real world interpretation for value for conversion
+# TODO Serial_Commands: find real world interpretation for value for conversion
 #
 # Sets the voltage control for the liquid lens
 # focus, value is 0 - 4095.
@@ -68,7 +68,7 @@ def WCommand_Focus(value = 'default_value'):
     return
 
 #
-# TODO find real world interpretation for value for conversion
+# TODO Serial_Commands: find real world interpretation for value for conversion
 #
 # Sets the voltage control for the liquid lens
 # foci, value is 0 - 255.
@@ -114,15 +114,14 @@ def WCommand_ReadEEPROM(address):
     else:
         raise ValueError("Serial Error: Requested Wasatch EEPROM address is invalid.")
 
-"""
 #
-# TODO writeByte
+# TODO Serial_Commands: writeByte
 # Writes the byte 'byte' to the location 'address'.
 #
 # Response is ACK.
 #
 def WCommand_WriteEEPROM(value, address):
-"""
+    return " "
 
 # ------- Sweep Commands:
 
@@ -179,8 +178,8 @@ def WCommand_ScanPulseDuration(microseconds):
     else:
         raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
 
-# TODO more scan settings
-# TODO other ramp xy function alternatives
+# TODO Serial_Commands: more scan settings
+# TODO Serial_Commands: other ramp xy function alternatives
 
 #
 # Configures the Wasatch to scan a square region
@@ -195,9 +194,9 @@ def WCommand_ScanXYRamp(startPoint, stopPoint):
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
 
-# TODO xy_ramp w/ repeated
+# TODO Serial_Commands: xy_ramp w/ repeated
 
-# TODO other ramps
+# TODO Serial_Commands: other ramps
 
 #
 # Initiates a scan that repeats for 'count' times. If 'count'
@@ -213,7 +212,7 @@ def WCommand_ScanNTimes(count):
     else:
         raise ValueError("Serial Error: Requested Wasatch scan count is invalid.")
 
-# TODO ntscans
+# TODO Serial_Commands: ntscans
 
 #
 # Stops the current Wasatch scan at the end of the
@@ -224,12 +223,12 @@ def WCommand_ScanNTimes(count):
 def WCommand_ScanStop():
     return "stop"
 
-"""
 # ------- Motor Commands:
 
-# TODO motorTopSpeed
+# TODO Serial_Commands: motorTopSpeed
 def WCommand_MotorSetTopSpeed():
+    return " "
 
-# TODO motorHome
+# TODO Serial_Commands: motorHome
 def WCommand_MotorHome():
-"""
+    return " "
