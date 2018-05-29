@@ -17,3 +17,7 @@ class Wasatch_Serial_Interface_Abstract:
     # Sends a serial command to the Wastach after 'time' milliseconds
     def sendCommand(self, command, time):
         raise NotImplementedError("Subclass for Wasatch Interface must have its own command method.")
+        
+    # Safely disconnects the microscope from the program
+    def close(self):
+        raise NotImplementedError("Subclass for Wasatch Interface must have its own closing method.")

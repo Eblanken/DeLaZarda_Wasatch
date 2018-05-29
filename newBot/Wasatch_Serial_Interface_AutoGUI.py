@@ -48,6 +48,10 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
             WProgram_TypePress('enter')
         else:
             raise RuntimeError("AutoGUI: Failed to find the serial prompt.")
+    
+    # Closes the connection to the microscope, in this case nothing. 
+    def close(self):
+        pass
 
     #------------------- Private Members ---------------
 

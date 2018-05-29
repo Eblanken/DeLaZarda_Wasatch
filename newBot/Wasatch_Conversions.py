@@ -46,7 +46,7 @@ DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty c
 # to mm.
 #
 def WConvert_FromMM(inputPoint):
-    val = ((inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X, (inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
+    val = float((inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X, (inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
     return val
 
 #
@@ -57,6 +57,7 @@ def WConvert_FromMM(inputPoint):
 def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, pulsePeriod = PULSEPERIOD, pulsesPerSweep = PULSESPERSWEEP):
     # Calculates scans for full exposure
     normalizedDutyCycle = (dutyCycle / DUTY_CYCLE)
+    print(("%d") % normalizedDutyCycle)
     normalRequiredTime = (USFORMM * distance) / normalizedDutyCycle
     normalRequiredPasses = normalRequiredTime / (2 * pulsesPerSweep * pulsePeriod)
     # Applies exposure percentage

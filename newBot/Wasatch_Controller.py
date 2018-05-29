@@ -17,6 +17,7 @@
 
 import time
 import tkinter
+import select
 
 from Wasatch_Serial_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
@@ -67,11 +68,13 @@ def executeBleachLine(microscopeCommand, startPoint, stopPoint, exposurePercenta
     microscopeCommand.sendCommand(WCommand_ScanPulseDuration(WConvert_PulseDuration()))
     microscopeCommand.sendCommand(WCommand_ScanPulseDelay(WConvert_PulseDelay()))
     microscopeCommand.sendCommand(WCommand_ScanAScans(WConvert_PulsesPerSweep()))
+    microscopeCommand.sendCommand(WCommand_ScanBScans(0))
     # Configures path
     microscopeCommand.sendCommand(WCommand_ScanXYRamp(startPoint, stopPoint))
     # Draws the line, number of scans dependent on previous factors
-    distance = ((startPoint[0] - stopPoint[0])**2 + (startPoint[1] - stopPoint[1])**2)**0.5
-    microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScans(distance, exposurePercentage)))
+    distance = float((float((startPoint[0] - stopPoint[0])**2 + (startPoint[1] - stopPoint[1])**2))**0.5)
+    microscopeCommand.sendCommand(WConvert_NumScans(distance, exposurePercentage))
+    print(WCommand_ScanNTimes(WConvert_NumScans(distance, exposurePercentage)))
     time.sleep(exposurePercentage * WConvert_BleachExposureTimeSecs(distance) + 1)
 
 #
@@ -148,10 +151,22 @@ def executeBleachFiducial(microscopeCommand, centerPoint, markWidth, markGapWidt
         executeBleachLine(microscopeCommand, (boundXStart, centerPoint[1]), (boundXStop, centerPoint[1]), exposurePercentage)
 
 # Available menu options
-OPTIONS = {
+     = {
     "Bleach Line" : bleachLine,
     "Bleach Fiducial" : bleachFiducial
 }
+
+#
+# Description:
+#   Function called when the GUI window is closed.
+#
+# Parameters:
+#   'commandModule' Subclass of Wasatch_Serial_Interface_Abstract that controls interactions.
+#
+def microscopeTerminal_exit(root, commandModule):
+    commandModule.close()
+    root.destroy();
+    print("Closed galvo connection.")
 
 #------------------------ Class Definitions ------------------------------------
 
@@ -212,5 +227,6 @@ goButton.pack()
 microscopeCommand = Wasatch_Serial_Interface_DirectSerial();
 if not microscopeCommand.connectedToMicroscope():
     print("Failed to connect to microscope.")
+root.protocol("WM_DELETE_WINDOW", lambda : microscopeTerminal_exit(root, microscopeCommand))
 # Starts program
 root.mainloop()

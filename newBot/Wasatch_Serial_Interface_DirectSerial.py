@@ -49,6 +49,10 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
     def sendCommand(self, command):
         self.serialPort.write(("%s\n" % command).encode('utf-8'))
+      
+    # Safely closes the connection to the microscope.
+    def close(self):
+        self.serialPort.close()
 
     #------------------- Private Members ---------------
 
@@ -56,7 +60,8 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     def _findPort(self):
         portList = list_ports.comports()
         print('Looking for serial ports:')
-        for index in range(0, self._RECONNECTIONATTEMPTS):
+        for index in 
+        range(0, self._RECONNECTIONATTEMPTS):
             for currentPort in portList:
                 try:
                     self.serialPort = serial.Serial(currentPort.device)
