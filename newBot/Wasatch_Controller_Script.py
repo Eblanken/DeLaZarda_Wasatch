@@ -20,8 +20,14 @@ from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_Direc
 microscopeCommand = Wasatch_Serial_Interface_DirectSerial()
 
 #--> Put your commands here:
+
+# Note: Center of field is 5, 5 (mm)
+
 # (x, y) in mm, time in seconds (float)
-GCommand_BleachLine(microscopeCommand, (1.0, 1.0), (1.0, 5.0), 0.5)
+#GCommand_BleachLine(microscopeCommand, (1.0, 1.0), (1.0, 5.0), 0.5)
+
+#(x,y) in mm, args are (module, center, length of mark, seperation b/ outermost pairs, exposure per line in (s), "V" is vertical, "H" is horizontal)
+GCommand_BleachFiducial(microscopeCommand, (5.0, 5.0), 3.0, 1.5, 1.0, "V")
 
 #--> Closes connection:
 microscopeCommand.close()

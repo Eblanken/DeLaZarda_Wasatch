@@ -40,7 +40,6 @@ def GCommand_BleachLine(microscopeCommand, startPoint, stopPoint, timeSecs):
     microscopeCommand.sendCommand(WCommand_ScanXYRamp(startPoint, stopPoint))
     # Draws the line, number of scans dependent on previous factors
     microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScansFromSecs(timeSecs)), timeSecs)
-    print(WCommand_ScanNTimes(WConvert_NumScansFromSecs(timeSecs)))
 
 #
 # Description:
