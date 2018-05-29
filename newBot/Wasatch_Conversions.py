@@ -12,7 +12,11 @@
 # to units that the microscope uses for serial interpretation.
 #
 
-#---------------------------- Constants ----------------------------------------
+#----------------------- Imported Libraries -----------------------------------
+
+import math
+
+#---------------------------- Constants ---------------------------------------
 
 # Microseconds of dwelling time to fully bleach one mm long section w/ standard profile
 USFORMM = 3000
@@ -34,7 +38,7 @@ PULSEPERIOD = 100 # Duration of a delay-pulse pair in microseconds
 PULSESPERSWEEP = 100 # Number of pulses per sweep of the scanner
 DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty cycle in USFORMM
 
-# ---------------------- Function Definitions ----------------------------------
+# ---------------------- Function Definitions ---------------------------------
 
 #
 # Converts desired point in mm to wasatch units. Good for about 0.478 microns
@@ -48,7 +52,7 @@ DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty c
 # to mm.
 #
 def WConvert_FromMM(inputPoint):
-    val = float((inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X, (inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
+    val = (float((inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X), float((inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y))
     return val
 
 #
@@ -64,7 +68,7 @@ def WConvert_FromMM(inputPoint):
 #   Integer number of scans required.
 #
 def WConvert_NumScansFromSecs(numSeconds, pulsePeriod = PULSEPERIOD, pulseCount = PULSESPERSWEEP):
-    return int(ceil((float(numSeconds)*(10**-6)) / (PULSEPERIOD * PULSESPERSWEEP)))
+    return int(math.ceil((float(numSeconds)*(10**6)) / (PULSEPERIOD * PULSESPERSWEEP)))
 
 #
 # Determines the number of complete scans required to achieve

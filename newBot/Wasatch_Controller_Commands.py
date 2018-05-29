@@ -12,14 +12,14 @@
 # options for the microscope.
 #
 
-#----------------------- Imported Libraries ------------------------------------
-
-import time
+#----------------------- Imported Libraries -----------------------------------
 
 from Wasatch_Serial_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_Abstract
+from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
+from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
 
-# ---------------------- Function Definitions -----------------
+# ---------------------- Function Definitions ---------------------------------
 
 #
 # Uses serial input to draw a line from starting points to end points
@@ -39,10 +39,8 @@ def GCommand_BleachLine(microscopeCommand, startPoint, stopPoint, timeSecs):
     # Configures paths
     microscopeCommand.sendCommand(WCommand_ScanXYRamp(startPoint, stopPoint))
     # Draws the line, number of scans dependent on previous factors
-    distance = float((float((startPoint[0] - stopPoint[0])**2 + (startPoint[1] - stopPoint[1])**2))**0.5)
-    microscopeCommand.sendCommand(WConvert_NumScansFromSecs(timeSecs))
-    print(WCommand_ScanNTimes(WConvert_NumScansFromSecs(timeSecs))
-    time.sleep(ceil(timeSecs))
+    microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScansFromSecs(timeSecs)), timeSecs)
+    print(WCommand_ScanNTimes(WConvert_NumScansFromSecs(timeSecs)))
 
 #
 # Description:
@@ -61,25 +59,15 @@ def GCommand_BleachFiducial(microscopeCommand, centerPoint, markWidth, markGapWi
     # Draws horizontal
     hLowY = centerPoint[1] - (markGapWidth / 2)
     hHighY = centerPoint[1] + (markGapWidth / 2)
-    print("Horizontal lines:")
-    print(hLowY)
-    print(hHighY)
-    print(boundXStart)
-    print(boundXStop)
-    executeBleachLine(microscopeCommand, (boundXStart, hLowY), (boundXStop, hLowY), timeSecs)
-    executeBleachLine(microscopeCommand, (boundXStart, hHighY), (boundXStop, hHighY), timeSecs)
+    GCommand_BleachLine(microscopeCommand, (boundXStart, hLowY), (boundXStop, hLowY), timeSecs)
+    GCommand_BleachLine(microscopeCommand, (boundXStart, hHighY), (boundXStop, hHighY), timeSecs)
     # Draws vertical
     vLowX = centerPoint[0] - (markGapWidth / 2)
     vHighX = centerPoint[0] + (markGapWidth / 2)
-    print("Vertical lines:")
-    print(vLowX)
-    print(vHighX)
-    print(boundYStart)
-    print(boundYStop)
-    executeBleachLine(microscopeCommand, (vLowX, boundYStart), (vLowX, boundYStop), timeSecs)
-    executeBleachLine(microscopeCommand, (vHighX, boundYStart), (vHighX, boundYStop), timeSecs)
+    GCommand_BleachLine(microscopeCommand, (vLowX, boundYStart), (vLowX, boundYStop), timeSecs)
+    GCommand_BleachLine(microscopeCommand, (vHighX, boundYStart), (vHighX, boundYStop), timeSecs)
     # Draws central
     if(orientation == "V"):
-        executeBleachLine(microscopeCommand, (centerPoint[0], boundYStart), (centerPoint[0], boundYStop), timeSecs)
+        GCommand_BleachLine(microscopeCommand, (centerPoint[0], boundYStart), (centerPoint[0], boundYStop), timeSecs)
     if(orientation == "H"):
-        executeBleachLine(microscopeCommand, (boundXStart, centerPoint[1]), (boundXStop, centerPoint[1]), timeSecs)
+        GCommand_BleachLine(microscopeCommand, (boundXStart, centerPoint[1]), (boundXStop, centerPoint[1]), timeSecs)

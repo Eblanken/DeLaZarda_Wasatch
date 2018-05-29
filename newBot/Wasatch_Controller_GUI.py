@@ -16,7 +16,7 @@
 
 import tkinter
 
-from WasatchInterface_Controller_Commands import *
+from Wasatch_Controller_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
 
@@ -45,7 +45,7 @@ def bleachLine(microscopeCommand):
     tkinter.Label(prompt, text = "End Y (mm)").pack()
     endYEntry = FloatEntry(prompt)
     endYEntry.pack()
-    tkinter.Label(prompt, text = "Runtime (uS)").pack()
+    tkinter.Label(prompt, text = "Runtime (S)").pack()
     timeEntry = FloatEntry(prompt)
     timeEntry.pack()
     goButton = tkinter.Button(prompt, text = "Go", command = lambda : GCommand_BleachLine(microscopeCommand, (float(startXEntry.get()), float(startYEntry.get())), (float(endXEntry.get()), float(endYEntry.get())), float(timeEntry.get())))
@@ -74,7 +74,7 @@ def bleachFiducial(microscopeCommand):
     tkinter.Label(prompt, text = "Gap Width (mm)").pack()
     gapWidth = FloatEntry(prompt)
     gapWidth.pack()
-    tkinter.Label(prompt, text = "Runtime (uS)").pack()
+    tkinter.Label(prompt, text = "Runtime (S)").pack()
     timeEntry = FloatEntry(prompt)
     timeEntry.pack()
     tkinter.Label(prompt, text = "Orientation").pack()

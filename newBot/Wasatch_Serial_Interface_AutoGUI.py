@@ -11,6 +11,8 @@
 
 #----------------------- Imported Libraries ------------------------------------
 
+import time
+
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_GUI_Commands import *
 
@@ -41,10 +43,11 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
         return False
 
     # Sends a serial command to the Wasatch Microscope
-    def sendCommand(self, command, time):
+    def sendCommand(self, command, timeSecs = 0):
         if WProgram_CenterSerialPrompt():
             WProgram_TypeString(command)
             WProgram_TypePress('enter')
+            time.sleep(timeSecs)
 
         else:
             raise RuntimeError("AutoGUI: Failed to find the serial prompt.")

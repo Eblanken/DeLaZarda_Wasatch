@@ -10,7 +10,7 @@
 
 #----------------------- Imported Libraries ------------------------------------
 
-from WasatchInterface_Controller_Commands import *
+from Wasatch_Controller_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
 
@@ -20,7 +20,8 @@ from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_Direc
 microscopeCommand = Wasatch_Serial_Interface_DirectSerial()
 
 #--> Put your commands here:
-# TODO
+# (x, y) in mm, time in seconds (float)
+GCommand_BleachLine(microscopeCommand, (1.0, 1.0), (1.0, 5.0), 0.5)
 
 #--> Closes connection:
 microscopeCommand.close()
