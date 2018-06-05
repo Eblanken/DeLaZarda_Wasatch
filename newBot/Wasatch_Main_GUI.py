@@ -1,15 +1,14 @@
 # TODO Controller_GUI: Verify input correctness.
-# COMBAK Controller_GUI: Nicer GUI. Standardize documentation.
+# COMBAK Controller_GUI: Nicer GUI.
 #
-# File: Wasatch_Interface_Controller_GUI
+# File: Wasatch_Main_GUI
 # ------------------------------
 # Author: Erick Blankenberg
 # Date: 5/12/2018
 #
 # Description:
-#   This GUI implements more advanced
-#   drawing and bleaching functions for
-#   the Wasatch Microscope.
+#   Executable GUI interface for drawing bleached lines
+#   with the Wasatch microscope.
 #
 
 #----------------------- Imported Libraries ------------------------------------
@@ -23,8 +22,11 @@ from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_Direc
 # ---------------------- Function Definitions ----------------------------------
 
 #
-# Opens command window for following a line and executes
-# when asked by the user
+# Description:
+#   Opens a settings window for drawing a line.
+#
+# Parameters:
+#   'microscopeCommand' Serial interface module (Subclass of Wasatch_Serial_Interface_Abstract)
 #
 def bleachLine(microscopeCommand):
     # Creates main window
@@ -52,8 +54,12 @@ def bleachLine(microscopeCommand):
     goButton.pack()
 
 #
-# Opens a command window for drawing a fiducial hash mark
-# and executes when asked by the user.
+# Description:
+#   Opens a command window for drawing a fiducial hash mark
+#   and executes when asked by the user.
+#
+#  Parameters:
+#   'microscopeCommand' Serial interface module (Subclass of Wasatch_Serial_Interface_Abstract)
 #
 def bleachFiducial(microscopeCommand):
     # Creates main window
@@ -99,6 +105,7 @@ OPTIONS = {
 #   Function called when the GUI window is closed.
 #
 # Parameters:
+#   'root'          Main window object (tklinter.TK)
 #   'commandModule' Subclass of Wasatch_Serial_Interface_Abstract that controls interactions.
 #
 def microscopeTerminal_exit(root, commandModule):
@@ -109,16 +116,27 @@ def microscopeTerminal_exit(root, commandModule):
 #------------------------ Class Definitions ------------------------------------
 
 #
-# Entry widget that accepts a floating point number.
-#
-# Based off of https://www.reddit.com/r/learnpython/comments/7c3edu/best_way_to_do_input_validation_on_tkinter_entry/dpmxt3i/
+# Description:
+#   Entry widget that accepts a floating point number.
+#   Based off of https://www.reddit.com/r/learnpython/comments/7c3edu/best_way_to_do_input_validation_on_tkinter_entry/dpmxt3i/
 #
 class FloatEntry(tkinter.Entry):
+    #
+    # Description:
+    #   Initializer for the class.
+    #
     def __init__(self, master = None, **kwargs):
         self.var = tkinter.StringVar(master, "0.0")
         tkinter.Entry.__init__(self, master, textvariable = self.var, **kwargs)
         self.var.trace('w', self.validate)
 
+    #
+    # Description:
+    #   Checks status of entry.
+    #
+    # Returns:
+    #   True if the entry is a float, false otherwise.
+    #
     def _isFloat(self):
         try:
             float(self.get())
@@ -126,25 +144,12 @@ class FloatEntry(tkinter.Entry):
             return False;
         return True;
 
+    #
+    # Description:
+    #   Verifies that the entry is a float.
+    #   
     def validate(self, *args):
         while not self._isFloat():
-            if float(self.get()) >= 0:
-                self.delete(len(self.get()) - 1)
-            else:
-                self.var = tkinter.StringVar(master, "0.0")
-
-#
-# This entry widget requires that the user enter a percentage
-# between 0 and 100
-#
-class PercentageEntry(FloatEntry):
-    def __init__(self, master = None, **kwargs):
-        self.var = tkinter.StringVar(master, "0.0")
-        tkinter.Entry.__init__(self, master, textvariable = self.var, **kwargs)
-        self.var.trace('w', self._validate)
-
-    def _validate(self):
-        while not self.isFloat() or float(self.get()) > 100 or float(self.get()) < 0:
             if float(self.get()) >= 0:
                 self.delete(len(self.get()) - 1)
             else:
@@ -163,8 +168,10 @@ goButton.pack()
 
 # Initializes connection with microscope
 microscopeCommand = Wasatch_Serial_Interface_DirectSerial();
+root.protocol("WM_DELETE_WINDOW", lambda : microscopeTerminal_exit(root, microscopeCommand))
 if not microscopeCommand.connectedToMicroscope():
     print("Failed to connect to microscope.")
-root.protocol("WM_DELETE_WINDOW", lambda : microscopeTerminal_exit(root, microscopeCommand))
+    microscopeTerminal_exit()
+
 # Starts program
 root.mainloop()

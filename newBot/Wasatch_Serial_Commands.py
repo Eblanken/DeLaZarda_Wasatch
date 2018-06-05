@@ -1,5 +1,5 @@
 #
-# COMBAK Serial_Commands: add more commands, standardize documentation.
+# COMBAK Serial_Commands: add more commands
 #
 # File: WasatchInterface_MicroscopeSettings
 # ------------------------------
@@ -7,8 +7,8 @@
 # Date: 5/12/2018
 #
 # Description:
-#   These methods take in parameters for serial commands and return a complete
-#   string that can be entered into the terminal. Units are in mm and seconds.
+#   These methods return strings to be
+#   sent to the Wasatch via serial.
 #
 
 #---------------------- Included Libraries -------------------------------------
@@ -20,33 +20,53 @@ from Wasatch_Conversions import *
 # ------- Galvo Commands:
 
 #
-# Retrieves the version number of the Wasatch
+# Description:
+#   Retrieves the version number of the Wasatch
 #
-# Response is: Ver:#.##\r\nA\n
+# Response:
+#    Always "Ver:#.##\r\nA\n".
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_Version():
     return "ver"
 
 #
-# Resets the Wasatch
+# Description:
+#   Resets the Wasatch.
 #
-# No response
+# Response:
+#   None.
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_Reset():
     return "reset"
 
 #
-# Puts the Wasatch into update mode
+# Description:
+#   Puts the Wasatch into update mode.
 #
-# Response is ACK
+# Response:
+#   Always 'A'.
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_FirmwareUpdate():
     return "dfu"
 
 #
-# Pings the Wasatch
+# Description:
+#   Pings the Wasatch.
 #
-# Response is ACK
+# Response:
+#   Always 'A'.
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_Ping():
     return "ping"
@@ -54,11 +74,19 @@ def WCommand_Ping():
 #
 # TODO Serial_Commands: find real world interpretation for value for conversion
 #
-# Sets the voltage control for the liquid lens
-# focus, value is 0 - 4095.
+# Description:
+#   Sets the voltage control for the liquid lens
+#   focus.
 #
-# Response is ACK, if no value is given response
-# is the current setting.
+# Parameters:
+#   'value' Range from 0 - 4095 (integer)
+#
+# Response:
+#   With parameters: 'A'
+#   No parameters:   Current setting
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_Focus(value = 'default_value'):
     if(value == 'default_value'):
@@ -70,11 +98,18 @@ def WCommand_Focus(value = 'default_value'):
 #
 # TODO Serial_Commands: find real world interpretation for value for conversion
 #
-# Sets the voltage control for the liquid lens
-# foci, value is 0 - 255.
+# Description:
+#   Sets the voltage control for the liquid lens foci.
 #
-# Response is ACK, if no value is given response is the current
-# microscope setting.
+# Parameters:
+#   'value' Range from 0-255 (integer)
+#
+# Response:
+#   With parameters: 'A'
+#   No parameters:   Current setting
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_Foci(value = 'default_value'):
     if(value == 'default_value'):
@@ -84,11 +119,19 @@ def WCommand_Foci(value = 'default_value'):
     return
 
 #
-# Turns the galvo motor 'servo' on and off. The motors are
-# disabled if 'value' is zero, enabled if greater than zero.
+# Description: // TODO Serial_Commands: revisit "out#"
+#   Turns the given galvo motor on and off.
 #
-# Typical response is ACK, responds with current state of
-# 'servo' if value is blank.
+# Parameters:
+#   'servo'
+#   'value'
+#
+# Response:
+#   With parameters: 'A'
+#   No parameters:   Current setting of 'servo'
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_Toggle(servo, value = 'default_value'):
     if(isinstance(servo, int) and (servo == 1 or servo == 2)):
@@ -102,11 +145,19 @@ def WCommand_Toggle(servo, value = 'default_value'):
         raise ValueError("Serial Error: Requested Wasatch motor is invalid.")
 
 #
-# Reads the EEPROM of the Wasatch at the memory
-# location 'address'
+# Descriptions:
+#   Reads the EEPROM of the Wasatch at the memory
+#   location 'address'
 #
-# Returns a page of hexadecimal from the EEPROM
-# at that location
+# Parameters:
+#   'address' The address to read (integer)
+#
+# Response:
+#   Returns a page of hexadecimal from the EEPROM
+#   at that location
+#
+# Returns:
+#   Serial printable command string.
 #
 def WCommand_ReadEEPROM(address):
     if(isinstance(address, int)):
@@ -116,54 +167,87 @@ def WCommand_ReadEEPROM(address):
 
 #
 # TODO Serial_Commands: writeByte
-# Writes the byte 'byte' to the location 'address'.
+# Description:
+#   Writes a byte to the given location.
 #
-# Response is ACK.
+# Parameters:
+#   'address' The location in EEPROM to write to (integer)
+#   'value'   The value to write (byte)
 #
-def WCommand_WriteEEPROM(value, address):
-    return " "
+# Response:
+#   Always: 'A'
+#
+# Returns:
+#   Serial printable command string.
+#
+def WCommand_WriteEEPROM(address, value):
+    return "eew %d %d" % (address, value)
 
 # ------- Sweep Commands:
 
 #
-# Sets the number of pulse triggers per sweep of the camera. Reducing
-# this value will reduce the duration of a single sweep.
+# Description:
+#   Sets the number of pulse triggers per sweep of the camera.
+#   Reducing this value will reduce the duration of a single sweep.
 #
-# Typical response is "ok.\n". Will respond with the current value
-# if no command is entered.
+# Response:
+#   With parameters: "ok.\n"
+#   Without parameters: Returns current value
 #
-def WCommand_ScanAScans(numScans):
-    if(isinstance(numScans, int)):
-        return "a_scans %d" % (numScans)
-    else:
-        raise ValueError("Serial Error: Requested Wasatch triggers per minor sweep is invalid.")
+# Returns:
+#   Serial printable command string.
+#
+def WCommand_ScanAScans(numScans = "default_value"):
+    if numScans != "default_value"
+        if(isinstance(numScans, int)):
+            return "a_scans %d" % (numScans)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch triggers per minor sweep is invalid.")
+    return "a_scans"
 
 #
-# Sets the number of minor sweeps (primary sweeps) per major sweep (slower
-# orthogonal sweep for volume). Value ranges from 0 - 65534. Default is 0.
+# Description:
+#   Sets the number of minor sweeps (primary sweeps) per major sweep (slower
+#   orthogonal sweep for volume). Default is 0.
 #
-# Typical response is "ok.\n". Will respond with the current value
-# if no command is entered.
+# Parameters:
+#   'numScans' (optional) number of minor sweeps per orthogonal sweep.
+#              Value is in range from 0 - 65534 (integer).
 #
-def WCommand_ScanBScans(numScans):
-    if(isinstance(numScans, int)):
-        return "b_scans %d" % (numScans)
-    else:
-        raise ValueError("Serial Error: Requested Wasatch minor sweeps per major sweep is invalid.")
+# Response:
+#   With parameters: "ok.\n"
+#   Without parameters: returns current setting
+#
+# Returns:
+#   Serial printable command string.
+#
+def WCommand_ScanBScans(numScans = "default_value"):
+    if numScans != "default_value"
+        if(isinstance(numScans, int)):
+            return "b_scans %d" % (numScans)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch minor sweeps per major sweep is invalid.")
+    return "b_scans"
 
 #
-# Sets the delay between camera pulses in microseconds.
-# Minimum value is 3, default is 50, maximum value is 65535.
+# Description:
+#   Sets the delay between camera pulses in microseconds.
+#   Minimum value is 3, default is 50, maximum value is 65535.
+#
+# Parameters:
+#   'microseconds' Delay between camera pulses (integer)
 #
 # Typical response is "ok.\n", if no settings given than
 # the response is the current setting for the delay between
 # pulses.
 #
-def WCommand_ScanPulseDelay(microseconds):
-    if(isinstance(microseconds, int) and (microseconds >= 3)):
-        return "delay %d" % (microseconds)
-    else:
-        raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
+def WCommand_ScanPulseDelay(microseconds = "default_value"):
+    if(microseconds != "default_value")
+        if(isinstance(microseconds, int) and (microseconds >= 3)):
+            return "delay %d" % (microseconds)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
+    return "delay"
 
 #
 # Sets the duration of a camera pulse in microseconds, if set to zero
@@ -173,6 +257,7 @@ def WCommand_ScanPulseDelay(microseconds):
 # respond with the current pulse setting.
 #
 def WCommand_ScanPulseDuration(microseconds):
+    if()
     if(isinstance(microseconds, int)):
         return "pulse %d" % (microseconds)
     else:

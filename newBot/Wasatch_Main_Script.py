@@ -5,7 +5,8 @@
 # Date: 5/29/2018
 #
 # Description:
-#   Feel free to fill in whatever commands you want.
+#   Executable script. Feel free to fill in whatever
+#   commands you want.
 #
 
 #----------------------- Imported Libraries ------------------------------------
@@ -33,7 +34,7 @@ microscopeCommand = Wasatch_Serial_Interface_DirectSerial()
 #GCommand_BleachFiducial(microscopeCommand, (5.0, 5.0), 5.0, 0.1, 5, "V")
 
 
-#This part below creates lines in different expusues times
+#This part below creates lines in different exposure times
 lineHeight = 5.0 #[mm]
 exposures = [0.1, 0.2, 0.5, 1, 2, 5] #sec
 for i in range(len(exposures)):
@@ -41,7 +42,7 @@ for i in range(len(exposures)):
     exposure = exposures[i] #[sec] per line
     print('Current exposure :', exposure)
     GCommand_BleachLine(microscopeCommand, (lineXPosition, 5.0-lineHeight/2), (lineXPosition, 5.0+lineHeight/2), exposure)
-    
+
 
 #--> Closes connection:
 microscopeCommand.close()

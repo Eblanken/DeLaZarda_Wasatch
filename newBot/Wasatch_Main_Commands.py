@@ -1,34 +1,30 @@
-# TODO controller_commands: verify that fiducial works. Standardize documentation
-# COMBAK controller_commands: add more commands
 #
-# File: WasatchInterface_Controller_Commands
+# File: WasatchInterface_Main_Commands
 # ------------------------------
 # Author: Erick Blankenberg
 # Date: 5/29/2018
 #
 # Description:
-#
-# These commands implement more sophisticated drawing
-# options for the microscope.
+#   These are the top level abstraction commands for
+#   bleaching marks with the Wasatch microscope.
 #
 
 #----------------------- Imported Libraries -----------------------------------
 
 from Wasatch_Serial_Commands import *
-from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_Abstract
-from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
-from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
+from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 
 # ---------------------- Function Definitions ---------------------------------
 
 #
-# Uses serial input to draw a line from starting points to end points
-# for the given percentage of time required for full bleaching exposure.
+# Decription:
+#   Draws a line.
 #
-# All coordinates are in mm from the top left corner, exposurePercentage is a
-# floating point number between 0 and 1, duration is how long the scan should
-# last in microseconds. 'microscopeCommand' is the object that controls serial
-# input to the microscope.
+# Parameters:
+#   'microscopeCommand' Serial interface module (Subclass of Wasatch_Serial_Interface_Abstract)
+#   'startPoint'        Point of form (x (mm), y (mm)) (Tuple of floats)
+#   'endPoint'          Point of form (x (mm), y (mm)) (Tuple of floats)
+#   'timeSecs'          Duration of drawing in seconds (Float)
 #
 def GCommand_BleachLine(microscopeCommand, startPoint, stopPoint, timeSecs):
     # Sets duty cycle and pulses per sweep
@@ -43,11 +39,16 @@ def GCommand_BleachLine(microscopeCommand, startPoint, stopPoint, timeSecs):
 
 #
 # Description:
-#   Uses serial input to draw a hash fiducial mark.
+#   Draws a pound-sign shaped fiducial mark with an orientation
+#   line running through the center either horizontally or vertically.
 #
 # Parameters:
-#   'microscopeCommand' The command module that handles serial
-#   'centerPoint'       The point object for the
+#   'microscopeCommand' Serial interface module (Subclass of Wasatch_Serial_Interface_Abstract)
+#   'centerPoint'       Center point of the fiducial of form (x (mm), y (mm)) (Tuple of floats)
+#   'markWidth'         Width of the entire mark in mm. (float)
+#   'markGapWidth'      Width between outer parralel members of the fiducial in mm (float)
+#   'timeSecs'          Duration of draw time for each line in seconds (float)
+#   'orientation'       Whether the orientation line is drawn horizontally or vertically through the centerPoint (string "H" or "V")
 #
 def GCommand_BleachFiducial(microscopeCommand, centerPoint, markWidth, markGapWidth, timeSecs, orientation):
     # Prints out a hash mark with a line in the middle, consists of 5 lines
