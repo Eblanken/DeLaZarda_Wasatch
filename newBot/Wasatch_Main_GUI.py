@@ -1,4 +1,4 @@
-# TODO Controller_GUI: Verify input correctness.
+# TODO Controller_GUI: Verify input correctness
 # COMBAK Controller_GUI: Nicer GUI.
 #
 # File: Wasatch_Main_GUI
@@ -14,6 +14,7 @@
 #----------------------- Imported Libraries ------------------------------------
 
 import tkinter
+import units
 
 from Wasatch_Controller_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
@@ -50,7 +51,7 @@ def bleachLine(microscopeCommand):
     tkinter.Label(prompt, text = "Runtime (S)").pack()
     timeEntry = FloatEntry(prompt)
     timeEntry.pack()
-    goButton = tkinter.Button(prompt, text = "Go", command = lambda : GCommand_BleachLine(microscopeCommand, (float(startXEntry.get()), float(startYEntry.get())), (float(endXEntry.get()), float(endYEntry.get())), float(timeEntry.get())))
+    goButton = tkinter.Button(prompt, text = "Go", command = lambda : GCommand_BleachLine(microscopeCommand, (float(startXEntry.get()) * unitRegistry.millimeter, float(startYEntry.get()) * unitRegistry.millimeter), (float(endXEntry.get()) * unitRegistry.millimeter, float(endYEntry.get()) * unitRegistry.millimeter), float(timeEntry.get()) * unitRegistry.second))
     goButton.pack()
 
 #
@@ -91,7 +92,7 @@ def bleachFiducial(microscopeCommand):
     }
     for curText, curMode in ORIENTATIONS:
         tkinter.Radiobutton(prompt, text = curText, variable = orientationEntry, value = curMode).pack()
-    goButton = tkinter.Button(prompt, text = "Go", command = lambda : GCommand_BleachFiducial(microscopeCommand, (float(centerXEntry.get()), float(centerYEntry.get())), float(markWidthEntry.get()), float(gapWidth.get()), float(timeEntry.get()), orientationEntry.get()))
+    goButton = tkinter.Button(prompt, text = "Go", command = lambda : GCommand_BleachFiducial(microscopeCommand, (float(centerXEntry.get()) * unitRegistry.millimeter, float(centerYEntry.get()) * unitRegistry.millimeter), float(markWidthEntry.get()) * unitRegistry.millimeter, float(gapWidth.get()) * unitRegistry.millimeter, float(timeEntry.get()) * unitRegistry.second, orientationEntry.get()))
     goButton.pack()
 
 # Available menu options
@@ -147,7 +148,7 @@ class FloatEntry(tkinter.Entry):
     #
     # Description:
     #   Verifies that the entry is a float.
-    #   
+    #
     def validate(self, *args):
         while not self._isFloat():
             if float(self.get()) >= 0:

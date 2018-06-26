@@ -15,44 +15,45 @@
 #----------------------- Imported Libraries -----------------------------------
 
 import math
+import units
 
 #---------------------------- Constants ---------------------------------------
 
 # Microseconds of dwelling time to fully bleach one mm long section w/ standard profile
-USFORMM = 3000
+USFORMM = 3000 * (unitRegistry.microsecond / unitRegistry.millimeter)
 
 # Borrowed from Edwin's code, Wasatch units seem to be roughly 2093 per mm
 MIN_Y = 3492.0
-MAX_Y = 24418.0
+MAX_Y = 26272.0 # Originally 24418, adjusted by 0.93
 MIN_X = 5081.0
-MAX_X = 26032.0
-MAX_LENGTH = 9566.0
-# Experimentaly the total reach of the beam is roughly 10mm in either direction
+MAX_X = 28008.0 # Originally 26032, adjusted by 0.93
+# Wasatch reach seems to be 10mm in each direction (calibrated for this)
 MM_Y = 10.0
 MM_X = 10.0
 
 # Note that actual total exposure times are determined from USFORMM, these
 # are just preferences but should not effect the total amount of energy
 # recieved by the sample.
-PULSEPERIOD = 100 # Duration of a delay-pulse pair in microseconds
-PULSESPERSWEEP = 100 # Number of pulses per sweep of the scanner
+PULSEPERIOD = 100 * unitRegistry.microsecond # Duration of a delay-pulse pair
+PULSESPERSWEEP = 100 * unitRegistry.microsecond # Number of pulses per sweep of the scanner
 DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty cycle in USFORMM
 
 # ---------------------- Function Definitions ---------------------------------
 
 #
-# Converts desired point in mm to wasatch units. Good for about 0.478 microns
-# but there seems to be issues where the laser goes over etc. and is pretty
-# wide?
+# Description:
+#   Converts desired point to a point in wasatch units. Good for about 0.478 microns
+#   but there seems to be issues where the laser goes over etc. and is pretty
+#   wide?
 #
-# InputPoints is assumed to be a tuple of size 2 whose
-# values are (x, y) mm.
+# Parameters:
+#   'inputPoint' A tuple of floats that has pint compatable units of length
 #
-# The function returns a tuple with the arguments converted
-# to mm.
+# Returns:
+#   The function returns a tuple with wasatch units
 #
 def WConvert_FromMM(inputPoint):
-    val = (float((inputPoint[0] * ((MAX_X - MIN_X) / MM_X)) + MIN_X), float((inputPoint[1] * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y))
+    val = (float(((inputPoint[0] + (MM_X / 2.0)) * ((MAX_X - MIN_X) / MM_X)) + MIN_X), float(((inputPoint[1] + (MM_Y / 2.0)).ito(unitRegistry.millimeters) * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y))
     return val
 
 #
@@ -60,15 +61,15 @@ def WConvert_FromMM(inputPoint):
 #   Returns the number of scans from the required duration
 #
 # Parameters:
-#   'numSeconds'     (float) How long the scan should last in seconds.
-#   'pulsePeriod'    (int)   Period of a single pulse in microseconds.
+#   'duration'       (float) How long the scan should last in pint compatable units of time.
+#   'pulsePeriod'    (int)   Period of a single pulse in pint compatable units of time.
 #   'pulsesPerSweep' (int)   Number of pulses in a primary scan.
 #
 # Returns:
 #   Integer number of scans required.
 #
-def WConvert_NumScansFromSecs(numSeconds, pulsePeriod = PULSEPERIOD, pulseCount = PULSESPERSWEEP):
-    return int(math.ceil((float(numSeconds)*(10**6)) / (PULSEPERIOD * PULSESPERSWEEP)))
+def WConvert_NumScansFromSecs(duration, pulsePeriod = PULSEPERIOD, pulseCount = PULSESPERSWEEP):
+    return int(math.ceil((float(numSeconds).ito(microseconds)) / (PULSEPERIOD.ito(microseconds) * PULSESPERSWEEP)))
 
 #
 # Determines the number of complete scans required to achieve
@@ -80,7 +81,6 @@ def WConvert_NumScansFromSecs(numSeconds, pulsePeriod = PULSEPERIOD, pulseCount 
 def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, pulsePeriod = PULSEPERIOD, pulsesPerSweep = PULSESPERSWEEP):
     # Calculates scans for full exposure
     normalizedDutyCycle = (dutyCycle / DUTY_CYCLE)
-    print(("%d") % normalizedDutyCycle)
     normalRequiredTime = (USFORMM * distance) / normalizedDutyCycle
     normalRequiredPasses = normalRequiredTime / (2 * pulsesPerSweep * pulsePeriod)
     # Applies exposure percentage
@@ -90,6 +90,9 @@ def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, puls
 #
 # Description:
 #   Calculates duration of pulse for the given duty cycle.
+#
+# Parameters:
+#   'dutyCycle' (float) Proportion of time on (1.0 maximum)
 #
 # Returns:
 #   Returns the pulse length in microseconds.
@@ -102,10 +105,10 @@ def WConvert_PulseDuration(dutyCycle = DUTY_CYCLE):
 #   Calculates delay between pulses for the given duty cycle.
 #
 # Returns:
-#   The delay between pulses in  microseconds.
+#   The delay between pulses in pint compatable microseconds.
 #
 def WConvert_PulseDelay(dutyCycle = DUTY_CYCLE):
-    return int(round((1 - DUTY_CYCLE) * PULSEPERIOD))
+    return int(round((1 - dutyCycle) * PULSEPERIOD))
 
 #
 # Returns the number of triggers per sweep
@@ -114,10 +117,11 @@ def WConvert_PulsesPerSweep():
     return PULSESPERSWEEP
 
 #
-# Returns the number of seconds required to bleach a line of the given
-# length.
+# Description:
+#   Returns the number of seconds required to bleach a line of the given
+#   length.
 #
 # TODO: Conversions: Exposure overhaul
 #
 def WConvert_BleachExposureTimeSecs(distance):
-    return USFORMM * distance * 10**-6
+    return USFORMM * distance.to(unitRegistry.millimeter)

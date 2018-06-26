@@ -15,6 +15,7 @@ import time
 
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_GUI_Commands import *
+from units import *
 
 #------------------------ Class Definition -------------------------------------
 
@@ -47,7 +48,7 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
         if WProgram_CenterSerialPrompt():
             WProgram_TypeString(command)
             WProgram_TypePress('enter')
-            time.sleep(timeSecs)
+            time.sleep(timeSecs.to(unitRegistry.second).magnitude)
 
         else:
             raise RuntimeError("AutoGUI: Failed to find the serial prompt.")

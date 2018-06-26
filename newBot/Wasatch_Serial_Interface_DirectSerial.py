@@ -33,6 +33,7 @@ import time
 from serial.tools import list_ports
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_Serial_Commands import *
+from units import *
 
 #------------------------ Class Definition -------------------------------------
 
@@ -57,7 +58,7 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
     def sendCommand(self, command, timeSecs = 0):
         self.serialPort.write(("%s\n" % command).encode('utf-8'))
-        time.sleep(timeSecs)
+        time.sleep(timeSecs.to(unitRegistry.seconds).magnitude)
 
     # Safely closes the connection to the microscope.
     def close(self):
@@ -81,7 +82,6 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
                 self.sendCommand(WCommand_Ping())
                 val = self.serialPort.read();
                 if(val == b'A'):
-                    print('Found the port for the galvos.')
                     self.sendCommand(WCommand_ScanStop())
                     print('Galvo connection initialized.')
                     return True

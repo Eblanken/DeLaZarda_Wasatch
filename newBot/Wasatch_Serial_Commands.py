@@ -14,6 +14,7 @@
 #---------------------- Included Libraries -------------------------------------
 
 from Wasatch_Conversions import *
+from units import *
 
 #--------------------- Function Definitions ------------------------------------
 
@@ -79,7 +80,7 @@ def WCommand_Ping():
 #   focus.
 #
 # Parameters:
-#   'value' Range from 0 - 4095 (integer)
+#   'value' (integer) Range from 0 - 4095
 #
 # Response:
 #   With parameters: 'A'
@@ -93,7 +94,8 @@ def WCommand_Focus(value = 'default_value'):
         return "focus"
     if(isinstance(value, int) and (value > 4095 or value < 0)):
         raise ValueError("Serial Error: Requested Wasatch focus value is invalid.")
-    return
+    else
+        return "focus %d" % (value)
 
 #
 # TODO Serial_Commands: find real world interpretation for value for conversion
@@ -102,7 +104,7 @@ def WCommand_Focus(value = 'default_value'):
 #   Sets the voltage control for the liquid lens foci.
 #
 # Parameters:
-#   'value' Range from 0-255 (integer)
+#   'value' (integer) Range from 0-255
 #
 # Response:
 #   With parameters: 'A'
@@ -116,7 +118,8 @@ def WCommand_Foci(value = 'default_value'):
         return "foci"
     if(isinstance(value, int) and (value > 255 or value < 0)):
         raise ValueError("Serial Error: Requested Wasatch foci value is invalid.")
-    return
+    else
+        return "foci %d" % (value)
 
 #
 # Description: // TODO Serial_Commands: revisit "out#"
@@ -190,6 +193,10 @@ def WCommand_WriteEEPROM(address, value):
 #   Sets the number of pulse triggers per sweep of the camera.
 #   Reducing this value will reduce the duration of a single sweep.
 #
+# Parameters:
+#   'numScans' (integer) (optional) Number of data points per sweep.
+#                                   Range is (2-65535).
+#
 # Response:
 #   With parameters: "ok.\n"
 #   Without parameters: Returns current value
@@ -198,9 +205,9 @@ def WCommand_WriteEEPROM(address, value):
 #   Serial printable command string.
 #
 def WCommand_ScanAScans(numScans = "default_value"):
-    if numScans != "default_value"
+    if(numScans != "default_value")
         if(isinstance(numScans, int)):
-            return "a_scans %d" % (numScans)
+            return "a_scans %d" % (numScans.magnitude)
         else:
             raise ValueError("Serial Error: Requested Wasatch triggers per minor sweep is invalid.")
     return "a_scans"
@@ -208,11 +215,11 @@ def WCommand_ScanAScans(numScans = "default_value"):
 #
 # Description:
 #   Sets the number of minor sweeps (primary sweeps) per major sweep (slower
-#   orthogonal sweep for volume). Default is 0.
+#   orthogonal sweep for volume).
 #
 # Parameters:
-#   'numScans' (optional) number of minor sweeps per orthogonal sweep.
-#              Value is in range from 0 - 65534 (integer).
+#   'numScans' (integer) (optional) number of minor sweeps per orthogonal sweep.
+#                                   Value is in range from 0 - 65534, default is 0.
 #
 # Response:
 #   With parameters: "ok.\n"
@@ -224,7 +231,7 @@ def WCommand_ScanAScans(numScans = "default_value"):
 def WCommand_ScanBScans(numScans = "default_value"):
     if numScans != "default_value"
         if(isinstance(numScans, int)):
-            return "b_scans %d" % (numScans)
+            return "b_scans %d" % (numScans.magnitude)
         else:
             raise ValueError("Serial Error: Requested Wasatch minor sweeps per major sweep is invalid.")
     return "b_scans"
@@ -232,64 +239,119 @@ def WCommand_ScanBScans(numScans = "default_value"):
 #
 # Description:
 #   Sets the delay between camera pulses in microseconds.
-#   Minimum value is 3, default is 50, maximum value is 65535.
 #
 # Parameters:
-#   'microseconds' Delay between camera pulses (integer)
+#   'duration' (float) ([Time]) (optional) Delay between camera pulses.
 #
-# Typical response is "ok.\n", if no settings given than
-# the response is the current setting for the delay between
-# pulses.
 #
-def WCommand_ScanPulseDelay(microseconds = "default_value"):
-    if(microseconds != "default_value")
+# Response:
+#   With settings: "ok.\n"
+#   Without parameters: returns current setting
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanPulseDelay(duration = "default_value"):
+    if(duration != "default_value")
+        microseconds = int(round(duration.to(unitRegister.microsecond)))
         if(isinstance(microseconds, int) and (microseconds >= 3)):
-            return "delay %d" % (microseconds)
+            return "delay %d" % (microseconds.magnitude)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
     return "delay"
 
 #
-# Sets the duration of a camera pulse in microseconds, if set to zero
-# no pulses occur. The value is 5 by default maximum is 65535.
+# Description:
+#   Sets the duration of a camera pulse in microseconds, if set to zero
+#   no pulses occur.
 #
-# Typical response is "ok.\n". If no pulse setting is entered will
-# respond with the current pulse setting.
+#   Typical response is "ok.\n". If no pulse setting is entered will
+#   respond with the current pulse setting.
 #
-def WCommand_ScanPulseDuration(microseconds):
-    if()
-    if(isinstance(microseconds, int)):
-        return "pulse %d" % (microseconds)
-    else:
-        raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
+# Parameters:
+#   'duration' (float) ([Time]) (optional) The duration of a camera pulse.
+#                                          Range is (0 - 65535).
+#
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanPulseDuration(duration = "default_value"):
+    if(duration != "default_value")
+        microseconds = int(round(duration.to(unitRegister.microsecond)))
+        if isinstance(microseconds, int):
+            return "pulse %d" % (microseconds.magnitude)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
+    return "pulse"
 
 # TODO Serial_Commands: more scan settings
-# TODO Serial_Commands: other ramp xy function alternatives
 
 #
-# Configures the Wasatch to scan a square region
-# from the two specified corners.
+# Description:
+#   Configures the Wasatch to scan a square region
+#   from the two specified corners.
+#   All of the coordinates assumed to be in mm and
+#   are converted to mm from the center.
 #
-# All of the coordinates assumed to be in mm and
-# are converted to mm from the top left corner.
+# Parameters:
+#   'startPoint' (Tuple of floats) ([Length]) First corner of the rectangle
+#   'stopPoint'  (Tuple of floats) ([Length]) Last corner of the rectangle
+#   'bRepeats'   (integer)                    The number of times to repeat
+#                                             each scan line, defaults to 1
 #
-def WCommand_ScanXYRamp(startPoint, stopPoint):
-    if(isinstance(startPoint[0], float) and isinstance(stopPoint[0], float) and isinstance(startPoint[1], float) and isinstance(stopPoint[1], float)):
-        return "xy_ramp %d %d %d %d" % (WConvert_FromMM(startPoint)[0], WConvert_FromMM(stopPoint)[0], WConvert_FromMM(startPoint)[1], WConvert_FromMM(stopPoint)[1])
+# Response:
+#   Always 'A'
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanXYRamp(startPoint, stopPoint, bRepeats = 1):
+    if(isinstance(startPoint[0], float) and isinstance(stopPoint[0], float) and isinstance(startPoint[1], float) and isinstance(stopPoint[1], float), isinstance(bRepeats, integer)):
+        return "xy_ramp %d %d %d %d %d" % (WConvert_FromMM(startPoint)[0].magnitude, WConvert_FromMM(stopPoint)[0].magnitude, WConvert_FromMM(startPoint)[1].magnitude, WConvert_FromMM(stopPoint)[1].magnitude, bRepeats)
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
-
-# TODO Serial_Commands: xy_ramp w/ repeated
 
 # TODO Serial_Commands: other ramps
 
 #
-# Initiates a scan that repeats for 'count' times. If 'count'
-# is negative or if there are no arguments, scans indefinitely.
-# In vector mode, this is the number of single b-scans, in raster
-# mode these are c-scans.
+# Description:
+#   Draws a polar ramp (concentric circular scan).
 #
-# Response is ACK
+# Parameters:
+#   'centerPoint'    The center of the scan of the form (x (mm), y (mm)) (Tuple of floats)
+#   'radius'         The radius of the scanned region in mm (float)
+#   'rings'          The number of concentric scanned circles. (integer)
+#   'pointsPerRing'  The number of data points per scanned circle. (integer)
+#   'ringRepeats'    The number of times to repeat each layer of the scan, defaults to 1 (integer)
+#
+# Response:
+#   Always 'A'
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanPolar(centerPoint, radius, rings, pointsPerRing, ringRepeats = 1):
+    raise ValueError("Serial Error: Polar ramp not implimented.") # TODO
+
+#
+# Description:
+#   Initiates a scan that repeats for 'count' times. If 'count'
+#   is negative or if there are no arguments, scans indefinitely.
+#   In vector mode, this is the number of single b-scans, in raster
+#   mode these are c-scans.
+#
+# Parameters:
+#   'count' (int) Number of scans, ranges from +- 2,147,483,648
+#
+# Response:
+#   Always 'A'
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
 #
 def WCommand_ScanNTimes(count):
     if(isinstance(count, int)):
@@ -300,10 +362,15 @@ def WCommand_ScanNTimes(count):
 # TODO Serial_Commands: ntscans
 
 #
-# Stops the current Wasatch scan at the end of the
-# current minor scan and turns off the mirrors.
+# Description:
+#   Stops the current Wasatch scan at the end of the
+#   current minor scan and turns off the mirrors.
 #
-# response is ACK
+# Response:
+#   Always 'A'
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
 #
 def WCommand_ScanStop():
     return "stop"
