@@ -48,7 +48,8 @@ class Wasatch_Serial_Interface_AutoGUI(Wasatch_Serial_Interface_Abstract):
         if WProgram_CenterSerialPrompt():
             WProgram_TypeString(command)
             WProgram_TypePress('enter')
-            time.sleep(timeSecs.to(unitRegistry.second).magnitude)
+            timeSecs.ito(unitRegistry.seconds)
+            time.sleep(timeSecs.magnitude)
 
         else:
             raise RuntimeError("AutoGUI: Failed to find the serial prompt.")

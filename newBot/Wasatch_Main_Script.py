@@ -11,7 +11,7 @@
 
 #----------------------- Imported Libraries ------------------------------------
 
-from Wasatch_Controller_Commands import *
+from Wasatch_Main_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
 from units import *
@@ -43,7 +43,10 @@ microscopeCommand = Wasatch_Serial_Interface_DirectSerial()
 #    exposure = exposures[i] #[sec] per line
 #    print('Current exposure :', exposure)
 #    GCommand_BleachLine(microscopeCommand, (lineXPosition, 5.0-lineHeight/2), (lineXPosition, 5.0+lineHeight/2), exposure)
-GCommand_TestGrid(microscopeCommand, (5000, 5000), 100, 50, 20, 40)
-
+print("Drawing grid")
+#GCommand_BleachGrid(microscopeCommand, (0 * unitRegistry.millimeters, 0 * unitRegistry.millimeters), 30, 0, 100 * unitRegistry.micrometer, 0 * unitRegistry.millimeter, 5 * unitRegistry.millimeter, 0 * unitRegistry.millimeter, 1 * unitRegistry.second)
+#GCommand_TestGrid(microscopeCommand, (5000, 5000), 100, 1, 200, 1, 2 * unitRegistry.seconds)
+GCommand_TestBars(microscopeCommand, (5000, 5000), 50, 200, 10000, 1 * unitRegistry.second)
+    
 #--> Closes connection:
 microscopeCommand.close()

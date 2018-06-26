@@ -87,13 +87,62 @@ def GCommand_BleachFiducial(microscopeCommand, centerPoint, markWidth, markGapWi
 #   'duration'          (integer) ([Time])        Dwell time per line
 #
 def GCommand_TestGrid(microscopeCommand, startPoint, columns, rows, colSpacing, rowSpacing, duration):
-    for colIndex in range(0, columns)
-        microscopeCommand.sendCommand("xy_ramp %d %d %d %d" % (startPoint[0] + (colSpacing * colIndex), startPoint[0] + (colSpacing * colIndex), startPoint[1], stopPoint[1] + (rowSpacing * (rows - 1))))
+    microscopeCommand.sendCommand(WCommand_ScanPulseDuration(WConvert_PulseDuration()))
+    microscopeCommand.sendCommand(WCommand_ScanPulseDelay(WConvert_PulseDelay()))
+    microscopeCommand.sendCommand(WCommand_ScanAScans(WConvert_PulsesPerSweep()))
+    microscopeCommand.sendCommand(WCommand_ScanBScans(0))
+    for colIndex in range(0, columns):
+        microscopeCommand.sendCommand("xy_ramp %d %d %d %d" % (startPoint[0] + (colSpacing * colIndex), startPoint[0] + (colSpacing * colIndex), startPoint[1], startPoint[1] + (rowSpacing * (rows - 1))))
         microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScansFromSecs(duration)), duration)
-    for rowIndex in range(0, rows)
-        microscopeCommand.sendCommand("xy_ramp %d %d %d %d" % (startPoint[0], startPoint[0] + (colSpacing * (columns - 1)), startPoint[1] + (rowSpacing * rowIndex), stopPoint[1] + (rowSpacing * rowIndex)))
+    for rowIndex in range(0, rows):
+        microscopeCommand.sendCommand("xy_ramp %d %d %d %d" % (startPoint[0], startPoint[0] + (colSpacing * (columns - 1)), startPoint[1] + (rowSpacing * rowIndex), startPoint[1] + (rowSpacing * rowIndex)))
         microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScansFromSecs(duration)), duration)
 
+#
+# Description:
+#   Draws a series of parralel lines in wasatch units for testing
+#
+# Parameters:
+#   'microscopeCommand' Serial interface module
+#   'startPoint'        (integer) (Wasatch units) The upper left hand corner of the grid
+#   'columns'           (integer)                 Number of to draw
+#   'colSpacing'        (integer) (Wasatch units) Distance between columns
+#   'colLength'         (integer) (Wasatch units) Length of a single column
+#   'duration'          (integer) ([Time])        Dwell time per line
+#
+def GCommand_TestBars(microscopeCommand, startPoint, columns, colSpacing, colLength, duration):
+    microscopeCommand.sendCommand(WCommand_ScanPulseDuration(WConvert_PulseDuration()))
+    microscopeCommand.sendCommand(WCommand_ScanPulseDelay(WConvert_PulseDelay()))
+    microscopeCommand.sendCommand(WCommand_ScanAScans(WConvert_PulsesPerSweep()))
+    microscopeCommand.sendCommand(WCommand_ScanBScans(0))
+    for colIndex in range(0, columns):
+        microscopeCommand.sendCommand("xy_ramp %d %d %d %d" % (startPoint[0] + (colSpacing * colIndex), startPoint[0] + (colSpacing * colIndex), startPoint[1], startPoint[1] + colLength))
+        microscopeCommand.sendCommand(WCommand_ScanNTimes(WConvert_NumScansFromSecs(duration)), duration)
+
+#
+# Description:
+#   Draws a grid.
+#
+# Parameters:
+#   'microscopeCommand' Serial interface module
+#   'startPoint'        (integer) (Wasatch units) The upper left hand corner of the grid
+#   'columns'           (integer)                 Number of to draw
+#   'rows'              (integer)                 Number of rows to draw
+#   'colSpacing'        (integer) ([Length])      Distance between columns
+#   'rowSpacing'        (integer) ([Length])      Distance between rows
+#   ''
+#   'duration'          (integer) ([Time])        Dwell time per line
+#
+def GCommand_BleachGrid(microscopeCommand, centerPoint, columns, rows, colSpacing, rowSpacing, colLength, rowLength, duration):  
+    microscopeCommand.sendCommand(WCommand_ScanPulseDuration(WConvert_PulseDuration()))
+    microscopeCommand.sendCommand(WCommand_ScanPulseDelay(WConvert_PulseDelay()))
+    microscopeCommand.sendCommand(WCommand_ScanAScans(WConvert_PulsesPerSweep()))
+    microscopeCommand.sendCommand(WCommand_ScanBScans(0))
+    for colIndex in range(0, columns):
+        GCommand_BleachLine(microscopeCommand, (centerPoint[0] + (colIndex - columns / 2) * colSpacing, centerPoint[1] + colLength / 2), (centerPoint[0] + (colIndex - columns / 2) * colSpacing, centerPoint[1] - colLength / 2), duration)
+    for rowIndex in range(0, rows):
+        GCommand_BleachLine(microscopeCommand, (centerPoint[0] - rowLength / 2, centerPoint[1] + (rowIndex - rows / 2)), (centerPoint[0] + rowLength / 2, centerPoint[1] + (rowIndex - rows / 2)), duration)
+    
 #
 # Description:
 #  Sets the scanner to continuously draw a 3d volumetric scan.
@@ -141,7 +190,7 @@ def GCommand_3DVolumetric_Precise(microscopeCommand, centerPoint, pixelWidth, pi
     upperLeftCorner = (boundXStart, boundYStart)
     lowerRightCorner = (boundXStop, boundYStop)
 
-    if verbose
+    if verbose:
         print('GCommand 3DVolumetric Precise, User action required.')
         print('In the OCT Volume tab:')
         print('1). Set A-scans to %d' % (pixelsWide))

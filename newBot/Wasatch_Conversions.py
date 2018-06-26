@@ -15,7 +15,7 @@
 #----------------------- Imported Libraries -----------------------------------
 
 import math
-import units
+from units import *
 
 #---------------------------- Constants ---------------------------------------
 
@@ -28,14 +28,14 @@ MAX_Y = 26272.0 # Originally 24418, adjusted by 0.93
 MIN_X = 5081.0
 MAX_X = 28008.0 # Originally 26032, adjusted by 0.93
 # Wasatch reach seems to be 10mm in each direction (calibrated for this)
-MM_Y = 10.0
-MM_X = 10.0
+MM_Y = 10.0 * unitRegistry.millimeter
+MM_X = 10.0 * unitRegistry.millimeter
 
 # Note that actual total exposure times are determined from USFORMM, these
 # are just preferences but should not effect the total amount of energy
 # recieved by the sample.
 PULSEPERIOD = 100 * unitRegistry.microsecond # Duration of a delay-pulse pair
-PULSESPERSWEEP = 100 * unitRegistry.microsecond # Number of pulses per sweep of the scanner
+PULSESPERSWEEP = 100 # Number of pulses per sweep of the scanner
 DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty cycle in USFORMM
 
 # ---------------------- Function Definitions ---------------------------------
@@ -53,7 +53,7 @@ DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty c
 #   The function returns a tuple with wasatch units
 #
 def WConvert_FromMM(inputPoint):
-    val = (float(((inputPoint[0] + (MM_X / 2.0)) * ((MAX_X - MIN_X) / MM_X)) + MIN_X), float(((inputPoint[1] + (MM_Y / 2.0)).ito(unitRegistry.millimeters) * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y))
+    val = ((((inputPoint[0] + (MM_X / 2.0)) * ((MAX_X - MIN_X) / MM_X)) + MIN_X), ((inputPoint[1] + (MM_Y / 2.0)).ito(unitRegistry.millimeters) * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
     return val
 
 #
@@ -69,7 +69,7 @@ def WConvert_FromMM(inputPoint):
 #   Integer number of scans required.
 #
 def WConvert_NumScansFromSecs(duration, pulsePeriod = PULSEPERIOD, pulseCount = PULSESPERSWEEP):
-    return int(math.ceil((float(numSeconds).ito(microseconds)) / (PULSEPERIOD.ito(microseconds) * PULSESPERSWEEP)))
+    return int(math.ceil((duration) / (PULSEPERIOD * PULSESPERSWEEP)))
 
 #
 # Determines the number of complete scans required to achieve
@@ -84,7 +84,7 @@ def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, puls
     normalRequiredTime = (USFORMM * distance) / normalizedDutyCycle
     normalRequiredPasses = normalRequiredTime / (2 * pulsesPerSweep * pulsePeriod)
     # Applies exposure percentage
-    nTimes = int(round((exposurePercentage * normalRequiredPasses)))
+    nTimes = round((exposurePercentage * normalRequiredPasses))
     return nTimes
 
 #
@@ -98,7 +98,7 @@ def WConvert_NumScans(distance, exposurePercentage, dutyCycle = DUTY_CYCLE, puls
 #   Returns the pulse length in microseconds.
 #
 def WConvert_PulseDuration(dutyCycle = DUTY_CYCLE):
-    return int(round(dutyCycle * PULSEPERIOD))
+    return round(dutyCycle * PULSEPERIOD)
 
 #
 # Description:
@@ -108,7 +108,7 @@ def WConvert_PulseDuration(dutyCycle = DUTY_CYCLE):
 #   The delay between pulses in pint compatable microseconds.
 #
 def WConvert_PulseDelay(dutyCycle = DUTY_CYCLE):
-    return int(round((1 - dutyCycle) * PULSEPERIOD))
+    return round((1 - dutyCycle) * PULSEPERIOD)
 
 #
 # Returns the number of triggers per sweep

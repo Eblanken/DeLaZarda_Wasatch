@@ -94,7 +94,7 @@ def WCommand_Focus(value = 'default_value'):
         return "focus"
     if(isinstance(value, int) and (value > 4095 or value < 0)):
         raise ValueError("Serial Error: Requested Wasatch focus value is invalid.")
-    else
+    else:
         return "focus %d" % (value)
 
 #
@@ -118,7 +118,7 @@ def WCommand_Foci(value = 'default_value'):
         return "foci"
     if(isinstance(value, int) and (value > 255 or value < 0)):
         raise ValueError("Serial Error: Requested Wasatch foci value is invalid.")
-    else
+    else:
         return "foci %d" % (value)
 
 #
@@ -205,9 +205,9 @@ def WCommand_WriteEEPROM(address, value):
 #   Serial printable command string.
 #
 def WCommand_ScanAScans(numScans = "default_value"):
-    if(numScans != "default_value")
+    if(numScans != "default_value"):
         if(isinstance(numScans, int)):
-            return "a_scans %d" % (numScans.magnitude)
+            return "a_scans %d" % (numScans)
         else:
             raise ValueError("Serial Error: Requested Wasatch triggers per minor sweep is invalid.")
     return "a_scans"
@@ -229,9 +229,9 @@ def WCommand_ScanAScans(numScans = "default_value"):
 #   Serial printable command string.
 #
 def WCommand_ScanBScans(numScans = "default_value"):
-    if numScans != "default_value"
+    if numScans != "default_value":
         if(isinstance(numScans, int)):
-            return "b_scans %d" % (numScans.magnitude)
+            return "b_scans %d" % (numScans)
         else:
             raise ValueError("Serial Error: Requested Wasatch minor sweeps per major sweep is invalid.")
     return "b_scans"
@@ -252,9 +252,9 @@ def WCommand_ScanBScans(numScans = "default_value"):
 #   String to be entered directly into the Wasatch serial terminal.
 #
 def WCommand_ScanPulseDelay(duration = "default_value"):
-    if(duration != "default_value")
-        microseconds = int(round(duration.to(unitRegister.microsecond)))
-        if(isinstance(microseconds, int) and (microseconds >= 3)):
+    if(duration != "default_value"):
+        microseconds = round(duration.to(unitRegistry.microsecond))
+        if(isinstance(microseconds.magnitude, float) and (microseconds.magnitude >= 3.0)):
             return "delay %d" % (microseconds.magnitude)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
@@ -280,9 +280,9 @@ def WCommand_ScanPulseDelay(duration = "default_value"):
 #   String to be entered directly into the Wasatch serial terminal.
 #
 def WCommand_ScanPulseDuration(duration = "default_value"):
-    if(duration != "default_value")
-        microseconds = int(round(duration.to(unitRegister.microsecond)))
-        if isinstance(microseconds, int):
+    if(duration != "default_value"):
+        microseconds = round(duration.to(unitRegistry.microsecond))
+        if isinstance(microseconds.magnitude, float):
             return "pulse %d" % (microseconds.magnitude)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse duration is invalid.")
@@ -310,7 +310,7 @@ def WCommand_ScanPulseDuration(duration = "default_value"):
 #   String to be entered directly into the Wasatch serial terminal.
 #
 def WCommand_ScanXYRamp(startPoint, stopPoint, bRepeats = 1):
-    if(isinstance(startPoint[0], float) and isinstance(stopPoint[0], float) and isinstance(startPoint[1], float) and isinstance(stopPoint[1], float), isinstance(bRepeats, integer)):
+    if(isinstance(startPoint[0], float) and isinstance(stopPoint[0], float) and isinstance(startPoint[1], float) and isinstance(stopPoint[1], float), isinstance(bRepeats, int)):
         return "xy_ramp %d %d %d %d %d" % (WConvert_FromMM(startPoint)[0].magnitude, WConvert_FromMM(stopPoint)[0].magnitude, WConvert_FromMM(startPoint)[1].magnitude, WConvert_FromMM(stopPoint)[1].magnitude, bRepeats)
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")

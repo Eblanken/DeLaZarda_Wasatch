@@ -56,13 +56,15 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
         return False
 
     # Sends a serial command to the Wasatch Microscope after 'time' milliseconds
-    def sendCommand(self, command, timeSecs = 0):
-        self.serialPort.write(("%s\n" % command).encode('utf-8'))
-        time.sleep(timeSecs.to(unitRegistry.seconds).magnitude)
+    def sendCommand(self, command, timeSecs = 0 * unitRegistry.seconds):
+        self._serialPort.write(("%s\n" % command).encode('utf-8'))
+        print("Command is: %s" % command)
+        timeSecs.ito(unitRegistry.seconds)
+        time.sleep(timeSecs.magnitude)
 
     # Safely closes the connection to the microscope.
     def close(self):
-        self.serialPort.close()
+        self._serialPort.close()
 
     #------------------- Private Members ---------------
 
@@ -73,20 +75,20 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
         for index in range(0, self._RECONNECTIONATTEMPTS):
             for currentPort in portList:
                 try:
-                    self.serialPort = serial.Serial(currentPort.device)
-                    self.serialPort.close()
-                    self.serialPort.open()
+                    self._serialPort = serial.Serial(currentPort.device)
+                    self._serialPort.close()
+                    self._serialPort.open()
                 except:
                     continue
-                self.serialPort.timeout = 1.0
+                self._serialPort.timeout = 1.0
                 self.sendCommand(WCommand_Ping())
-                val = self.serialPort.read();
+                val = self._serialPort.read();
                 if(val == b'A'):
                     self.sendCommand(WCommand_ScanStop())
                     print('Galvo connection initialized.')
                     return True
                 #else:
-                    #self.serialPort.close()
+                    #self._serialPort.close()
         print('No serial ports found for the galvo.')
         return False
 
