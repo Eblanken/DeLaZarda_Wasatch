@@ -23,6 +23,7 @@ from units import *
 USFORMM = 3000 * (unitRegistry.microsecond / unitRegistry.millimeter)
 
 # Borrowed from Edwin's code, Wasatch units seem to be roughly 2093 per mm
+# Udate: 6/27/2018, found that 50
 MIN_Y = 3492.0
 MAX_Y = 26272.0 # Originally 24418, adjusted by 0.93
 MIN_X = 5081.0
@@ -53,7 +54,7 @@ DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty c
 #   The function returns a tuple with wasatch units
 #
 def WConvert_FromMM(inputPoint):
-    val = ((((inputPoint[0] + (MM_X / 2.0)) * ((MAX_X - MIN_X) / MM_X)) + MIN_X), ((inputPoint[1] + (MM_Y / 2.0)).ito(unitRegistry.millimeters) * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
+    val = ((((inputPoint[0].to(unitRegistry.millimeter) + (MM_X / 2.0)) * ((MAX_X - MIN_X) / MM_X)) + MIN_X), ((inputPoint[1].to(unitRegistry.millimeters) + (MM_Y / 2.0)).to(unitRegistry.millimeters) * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
     return val
 
 #

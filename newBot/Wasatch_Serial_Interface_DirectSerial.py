@@ -59,8 +59,7 @@ class Wasatch_Serial_Interface_DirectSerial(Wasatch_Serial_Interface_Abstract):
     def sendCommand(self, command, timeSecs = 0 * unitRegistry.seconds):
         self._serialPort.write(("%s\n" % command).encode('utf-8'))
         print("Command is: %s" % command)
-        timeSecs.ito(unitRegistry.seconds)
-        time.sleep(timeSecs.magnitude)
+        time.sleep(timeSecs.to(unitRegistry.seconds).magnitude)
 
     # Safely closes the connection to the microscope.
     def close(self):
