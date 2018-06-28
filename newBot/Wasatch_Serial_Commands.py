@@ -196,8 +196,8 @@ def WCommand_WriteEEPROM(address, value):
 #
 # Parameters:
 #   'numScans' (Integer) (optional) Number of data points per sweep.
-#                                   Range is (2-65535). Leave blank
-#                                   to read current value.
+#                                   Range is (2-65535), default is 1000
+#                                   Leave blank to return current setting.
 #
 # Response:
 #   With parameters: "ok.\n"
@@ -221,7 +221,9 @@ def WCommand_ScanAScans(numScans = "default_value"):
 #
 # Parameters:
 #   'numScans' (Integer) (optional) number of minor sweeps per orthogonal sweep.
-#                                   Value is in range from [0, 65534] multiple of 2 default is 0.
+#                                   Value is in range from [0, 65534] multiple
+#                                   of 2, default is 0. Leave blank to return
+#                                   current setting.
 #
 # Response:
 #   With parameters: "ok.\n"
@@ -244,6 +246,9 @@ def WCommand_ScanBScans(numScans = "default_value"):
 #
 # Parameters:
 #   'duration' (Float) ([Time]) (optional) Delay between camera pulses.
+#                                          Range is [3,65535], default is 50.
+#                                          Leave blank to return current
+#                                          settings.
 #
 # Response:
 #   With settings: "ok.\n"
@@ -255,7 +260,7 @@ def WCommand_ScanBScans(numScans = "default_value"):
 def WCommand_ScanPulseDelay(duration = "default_value"):
     if(duration != "default_value"):
         microseconds = int(round(duration.to(unitRegistry.microsecond).magnitude))
-        if(isinstance(microseconds, int) and (microseconds >= 3)):
+        if(isinstance(microseconds, int) and (microseconds >= 3) and (microseconds <= 65535)):
             return "delay %d" % (microseconds)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse delay %s is invalid." % (duration))
@@ -268,7 +273,8 @@ def WCommand_ScanPulseDelay(duration = "default_value"):
 #
 # Parameters:
 #   'duration' (Float) ([Time]) (optional) The duration of a camera pulse.
-#                                          Range is [0, 65535].
+#                                          Range is [0, 65535], default is 5
+#                                          Leave blank to return current settings.
 #
 # Response:
 #   With parameters 'ok.\n'
@@ -280,13 +286,176 @@ def WCommand_ScanPulseDelay(duration = "default_value"):
 def WCommand_ScanPulseDuration(duration = "default_value"):
     if(duration != "default_value"):
         microseconds = round(duration.to(unitRegistry.microsecond).magnitude)
-        if (isinstance(microseconds, int) and microseconds >= 0 and microseconds <= 605535):
+        if (isinstance(microseconds, int) and (microseconds >= 0) and (microseconds <= 605535)):
             return "pulse %d" % (microseconds)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse duration %s is invalid." % (duration))
     return "pulse"
 
-# TODO Serial_Commands: tret, A_div, phase, trigger, a_hold, b_hold, trdelay
+#
+# Description:
+#   Sets the duration of a non-triggering return pulse and delay combined.
+#
+# Parameters:
+#   'duration' (Float) ([Time]) (optional) The duration of a return period.
+#                                          Range is [0, 255], default is 7. Leave
+#                                          blank to return current settings.
+#
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting.
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanReturnSetDuration(duration = "default_value"):
+    if(duration != "default_value"):
+        microseconds = round(duration.to(unitRegistry.microsecond).magnitude)
+        if (isinstance(microseconds, int) and (microseconds >= 0) and (microseconds <= 605535)):
+            return "t_ret %d" % (microseconds)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch delay period duration %s is invalid." % (duration))
+    return "t_ret"
+
+#
+# Description:
+#   Scales the return path time, the return path has the same number
+#   of samples as the outbound path, the return counter is incremented
+#   by multiples of this value, effectively making it 'factor' times faster.
+#
+# Parameters:
+#   'factor' (Integer) (optional) Integer multiple for the return counter. Range is [0, 65535],
+#                                 default is 1. Leave blank to return current settings.
+#
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting.
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanReturnClockDivider(factor = "default_value"):
+    if(factor != "default_value"):
+        if (isinstance(factor, int) and (factor >= 0) and (factor <= 605535)):
+            return "A_div %d" % (factor))
+        else:
+            raise ValueError("Serial Error: Requested Wasatch return clock divider %s is invalid." % (factor))
+    return "A_div"
+
+#
+# Description:
+#   Adjusts phase relationship between mirror movement and triggering.
+#
+# Parameters:
+#   'offset' (Integer) (optional) Phase shift (?) range is [0, 65535], default is 100.
+#                                 Leave blank to return current settings. Currently assumed
+#                                 to be triggering count offset.
+#
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting.
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanPhaseShift(offset = "default_value"):
+    if(offset != "default_value"):
+        if (isinstance(offset, int) and (offset >= 0) and (offset <= 605535)):
+            return "Phase %d" % (offset)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch triggering phase shift %s is invalid." % (offset))
+    return "Phase"
+
+#
+# Description:
+#   Enables triggers on the return sweep, if set to one then
+#   triggers occur, otherwise no triggers will occur on the return sweep.
+#
+# Parameters:
+#   'enable' (Bool) (optional) True if triggers should be enabled for the return scan,
+#                              false otherwise, disabled by default. Leave blank
+#                              to return current setting.
+#
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting.
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanReturnTrigger(enable = "default_value"):
+    if(enable != "default_value"):
+        if (isinstance(enable, bool)):
+            value = 0
+            if enable
+                value = 1
+            return "trigger %d" % (value)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch trigger value %s is invalid." % (enable))
+    return "trigger"
+
+#
+# Description:
+#   Sets triggerless pulses between a scans.
+#
+# Parameters:
+#   'delayCount' (Integer) (optional) Number of triggerless pulses between a scans
+#                                     for stabilization. Range is [0, 65535],
+#                                     default is 0. Leave blank to return
+#                                     current settings.
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting.
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanATriggerGap(delayCount = "default_value"):
+    if(delayCount != "default_value"):
+        if (isinstance(delayCount, int) and (delayCount >= 0) and (delayCount <= 605535)):
+            return "a_hold %d" % (delayCount)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch triggerless pulses per a scan %s is invalid." % (delayCount))
+    return "a_hold"
+
+#
+# Description:
+#   Sets triggerless pulses between b scans.
+#
+# Parameters:
+#   'delayCount' (Integer) (optional) Number of triggerless pulses between b scans
+#                                     for stabilization. Range is [0, 65535],
+#                                     default is 0. Leave blank to return
+#                                     current settings.
+# Response:
+#   With parameters 'ok.\n'
+#   Without parameters returns current setting.
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanBTriggerGap(delayCount = "default_value"):
+    if(delayCount != "default_value"):
+        if (isinstance(delayCount, int) and (delayCount >= 0) and (delayCount <= 605535)):
+            return "b_hold %d" % (delayCount)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch triggerless pulses per b scan %s is invalid." % (delayCount))
+    return "b_hold"
+
+#
+# Description:
+#   Sets the delay before the first strigger.
+#
+# Parameters:
+#   'delay' (Integer) Delay before first trigger (?). Units currently not known.
+#
+def WCommand_ScanTriggerDelay(delay = "default_value"):
+    if(delay != "default_value"):
+        if (isinstance(delay, int) and (delayCount >= 0) and (delayCount <= 605535)):
+            return "trdelay %d" % (delayCount)
+        else:
+            raise ValueError("Serial Error: Requested Wasatch trigger delay %s is invalid." % (delay))
+    return "trdelay"
 
 #
 # Description:
@@ -318,10 +487,10 @@ def WCommand_ScanTriggerDelayEnable(enable = "default_value"):
 #   Configures the X ramp scanning parameters for the Wasatch
 #
 # Parameters:
-#   'startX' (float) ([Length]) Starting X position of the rectangle.
-#   'stopX'  (float) ([Length]) End X position of the rectangle
-#   'bRepeats'   (integer)      The number of times to repeat
-#                               each scan line, defaults to 1
+#   'startX'   (float) ([Length]) Starting X position of the rectangle.
+#   'stopX'    (float) ([Length]) End X position of the rectangle
+#   'bRepeats' (integer)          The number of times to repeat
+#                                 each scan line, defaults to 1
 #
 # Response:
 #   Always 'A'
@@ -340,10 +509,10 @@ def WCommand_ScanXRamp(startX, stopX, bRepeats = 1):
 #   Configures the Y ramp scanning parameters for the Wasatch
 #
 # Parameters:
-#   'startY' (float) ([Length]) Starting Y position of the rectangle.
-#   'stopY'  (float) ([Length]) End Y position of the rectangle
-#   'bRepeats'   (integer)      The number of times to repeat
-#                               each scan line, defaults to 1
+#   'startY'   (float) ([Length]) Starting Y position of the rectangle.
+#   'stopY'    (float) ([Length]) End Y position of the rectangle
+#   'bRepeats' (integer)          The number of times to repeat
+#                                 each scan line, defaults to 1
 #
 # Response:
 #   Always 'A'
@@ -366,7 +535,7 @@ def WCommand_ScanYRamp(startY, stopY, bRepeats = 1):
 # Parameters:
 #   'startPoint' (Tuple of floats) ([Length]) First corner of the rectangle
 #   'stopPoint'  (Tuple of floats) ([Length]) Last corner of the rectangle
-#   'bRepeats'   (integer)                    The number of times to repeat
+#   'bRepeats'   (Integer)                    The number of times to repeat
 #                                             each scan line, defaults to 1
 #
 # Response:
@@ -381,18 +550,17 @@ def WCommand_ScanXYRamp(startPoint, stopPoint, bRepeats = 1):
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
 
-# TODO Serial_Commands: other ramps
-
 #
-# Description:
+# Description: # TODO Serial_Commands: polar ramp
 #   Draws a polar ramp (concentric circular scan).
 #
 # Parameters:
-#   'centerPoint'    The center of the scan of the form (x (mm), y (mm)) (Tuple of floats)
-#   'radius'         The radius of the scanned region in mm (float)
-#   'rings'          The number of concentric scanned circles. (integer)
-#   'pointsPerRing'  The number of data points per scanned circle. (integer)
-#   'ringRepeats'    The number of times to repeat each layer of the scan, defaults to 1 (integer)
+#   'centerPoint'    (Tuple of Floats) ([Length]) The center of the scan of the form (x, y)
+#   'radius'         (Float) ([Length])           The radius of the scanned region
+#   'rings'          (Integer)                    The number of concentric scanned circles.
+#   'pointsPerRing'  (Integer)                    The number of data points per scanned circle.
+#   'ringRepeats'    (Integer)                    The number of times to repeat each layer
+#                                                 of the scan, defaults to 1.
 #
 # Response:
 #   Always 'A'
@@ -402,6 +570,23 @@ def WCommand_ScanXYRamp(startPoint, stopPoint, bRepeats = 1):
 #
 def WCommand_ScanPolar(centerPoint, radius, rings, pointsPerRing, ringRepeats = 1):
     raise ValueError("Serial Error: Polar ramp not implimented.") # TODO
+
+#
+# Description: # TODO Serial_Commands: spiral
+#   Draws a polar ramp (concentric circular scan).
+#
+# Parameters:
+#   'centerPoint'    (Tuple of Floats) ([Length]) The center of the scan of the form (x, y)
+#   'radius'         (Float) ([Length])           The radius of the scanned region
+#
+# Response:
+#   Always 'A'
+#
+# Returns:
+#   String to be entered directly into the Wasatch serial terminal.
+#
+def WCommand_ScanSpiral():
+    raise ValueError("Serial Error: Spiral ramp not implimented.") # TODO
 
 #
 # Description:
@@ -466,7 +651,10 @@ def WCommand_ScanStop():
 #   implimented in the Wasatch.
 #
 # Parameters:
-#   'motorIdentifier' (String or Char) (optional) Value is 'q', 'p', 'i', or 'h', sets the motors top speed
+#   'motorIdentifier' (String or Char)      Value is 'q', 'p', 'i', or 'h'.
+#                                           Sets the target motor.
+#   'value'           (Integer) (optional)  Top speed for motor, units
+#                                           and bounds currently unknown.
 #
 # Response:
 #   Will return 'A' with no parameters
@@ -476,13 +664,14 @@ def WCommand_ScanStop():
 # Returns:
 #   String to be directly entered into the Wasatch terminal.
 #
-def WCommand_MotorSetTopSpeed(motorIdentifier = 'default_value'):
-    if(motorIdentifier != 'default_value'):
-        if(motorIdentifier in MOTOR_IDENTIFIERS):
-            return "mmset %s" % (motorIdentifier)
+def WCommand_MotorSetTopSpeed(motorIdentifier, value = "default_value"):
+    if(motorIdentifier in MOTOR_IDENTIFIERS):
+        if(value != "default_value"):
+            return "mmset %s %d" % (motorIdentifier, value)
         else:
-            ValueError("Serial Error: Requested Wasatch motor top speed for %s is invalid." % (motorIdentifier))
-    return "mmset"
+            return "mmset %s" % (motorIdentifier)
+    else:
+        ValueError("Serial Error: Requested Wasatch motor top speed for %s with value %s is invalid." % (motorIdentifier, value))
 
 #
 # Description:
@@ -490,24 +679,27 @@ def WCommand_MotorSetTopSpeed(motorIdentifier = 'default_value'):
 #   implimented in the Wasatch.
 #
 # Parameters:
-#   'motorIdentifier' (String or Char) (optional) Value is 'q', 'p', 'i', or 'h'.
-#                                                 Sets the target motor.
+#   'motorIdentifier' (String or Char)      Value is 'q', 'p', 'i', or 'h'.
+#                                           Sets the target motor.
+#   'value'           (Integer) (optional)  Top acceleration for motor, units
+#                                           and bounds currently unknown.
 #
 # Response:
-#   Will return 'A' with no parameters
+#   Will return 'A' with parameters
 #   or with the current setting otherwise.
 #   This is not currently implimented.
 #
 # Returns:
 #   String to be directly entered into the Wasatch terminal.
 #
-def WCommand_MotorSetTopAcceleration(motorIdentifier = 'default_value'):
-    if(motorIdentifier != 'default_value'):
-        if(motorIdentifier in MOTOR_IDENTIFIERS):
-            return "maset %s" % (motorIdentifier)
+def WCommand_MotorSetTopAcceleration(motorIdentifier, value = "default_value"):
+    if(motorIdentifier in MOTOR_IDENTIFIERS):
+        if(value != "default_value"):
+            return "maset %s %d" % (motorIdentifier, value)
         else:
-            ValueError("Serial Error: Requested Wasatch motor top acceleration for %s is invalid." % (motorIdentifier))
-    return "maset"
+            return "maset %s" % (motorIdentifier)
+    else:
+        ValueError("Serial Error: Requested Wasatch motor top acceleration for %s with value %s is invalid." % (motorIdentifier, value))
 
 #
 # Description:
@@ -581,10 +773,10 @@ def WCommand_MotorHome(motorIdentifier = 'a'):
 #   Sets the motor direction for the given motor.
 #
 # Parameters:
-#   'motorIdentifier' (String or Char) Value is 'q', 'p', 'i', or 'h'.
-#                                      Sets the target motor.
+#   'motorIdentifier' (String or Char)  Value is 'q', 'p', 'i', or 'h'.
+#                                       Sets the target motor.
 #
-#   'value'           (Integer) (optional) Sets the motor forward if zero (defualt),
+#   'forwards'        (Bool) (optional) Sets the motor forward if true (defualt),
 #                                          backwards otherwise.
 #
 # Response:
@@ -593,10 +785,13 @@ def WCommand_MotorHome(motorIdentifier = 'a'):
 # Returns:
 #   String to be directly entered into the Wasatch serial terminal.
 #
-def WCommand_MotorDirection(motorIdentifier, value = 0):
-    if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(value, int)):
+def WCommand_MotorDirection(motorIdentifier, forwards = true):
+    if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(forwards, bool)):
+        value = 1
+        if forwards
+            value = 0
         return "mgd %s %d" % (motorIdentifier, value)
-    ValueError("Serial Error: Requested Wasatch motor %s or direction %s is invalid." % (motorIdentifier, value))
+    ValueError("Serial Error: Requested Wasatch motor %s or direction %s is invalid." % (motorIdentifier, forwards))
 
 #
 # Description:
