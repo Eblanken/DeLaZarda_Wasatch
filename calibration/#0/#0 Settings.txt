@@ -1,0 +1,4 @@
+This data was scanned with:
+
+Rows: 50 total spaced 400 units apart for a total of 20000 units.
+Columns: 25 total spaced 800 units apart for a total of 20000 units.

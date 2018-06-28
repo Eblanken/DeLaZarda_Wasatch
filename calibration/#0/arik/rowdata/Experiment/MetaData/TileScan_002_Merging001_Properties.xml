@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="LASAF_WFIP.xsl"?>
+<Data>
+  <Image>
+    <Attachment Name="PreviewMarker" Application="LAS AF" IsPreviewImage="0" />
+    <ImageDescription>
+      <Name>TileScan_002_Merging001</Name>
+      <Size>14.74 MB</Size>
+      <Channels>
+        <ChannelDescription DataType="0" ChannelTag="0" Resolution="8" NameOfMeasuredQuantity="" Min="0.000000e+000" Max="2.550000e+002" Unit="" LUTName="Blue" IsLUTInverted="0" BytesInc="0" BitInc="0">
+        </ChannelDescription>
+      </Channels>
+      <Dimensions>
+        <DimensionDescription DimID="X" NumberOfElements="3545" Origin="0.00" Length="10.22" Unit="mm" BitInc="0" BytesInc="1" LogicalUnit="pixels" Voxel="0.003">
+        </DimensionDescription>
+        <DimensionDescription DimID="Y" NumberOfElements="4158" Origin="0.00" Length="11.99" Unit="mm" BitInc="0" BytesInc="3545" LogicalUnit="pixels" Voxel="0.003">
+        </DimensionDescription>
+        <DimensionDescription DimID="Z" NumberOfElements="1" Origin="0.00" Length="0.00" Unit="m" BitInc="0" BytesInc="14740110" LogicalUnit="sections" Voxel="0.000">
+        </DimensionDescription>
+      </Dimensions>
+      <FileLocation>T:\06272018\arik\Experiment.lif</FileLocation>
+      <FrameCount>1 (1 channels, 1 frames)</FrameCount>
+      <FluoDescription />
+    </ImageDescription>
+    <Attachment Name="HardwareSettingList" Application="LAS AF">
+      <HardwareSetting Name="default">
+        <ScannerSetting>
+          <ScannerSettingRecord Identifier="nDelayTime" Unit="" Description="Delay Time" Data="0" Variant="" VariantType="8" />
+        </ScannerSetting>
+        <FilterSetting />
+      </HardwareSetting>
+    </Attachment>
+    <TimeStampList />
+    <Attachment Name="ChannelAttachment" Application="LAS AF" />
+    <Attachment Name="ViewerScaling" Application="LAS AF">
+      <ChannelScalingInfo BackgroundLutName="" WhiteValue="1" BlackValue="0" GammaValue="1" Automatic="0" />
+    </Attachment>
+    <Attachment Name="ImageXMLDocument" Application="LAS AF">
+      <RootNode />
+    </Attachment>
+  </Image>
+</Data>
