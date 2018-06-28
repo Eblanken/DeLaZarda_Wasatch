@@ -182,9 +182,9 @@ def WCommand_ReadEEPROM(address):
 #   Serial printable command string.
 #
 def WCommand_WriteEEPROM(address, value):
-    if(isInstance(address, integer) and isInstance(value, integer) and value <= 255)
+    if(isinstance(address, int) and isInstance(value, int) and value <= 255):
         return "eew %d %s" % (address, hex(value))
-    else
+    else:
         raise ValueError("Serial Error: Requested Wasatch EEPROM write location %s value %s is invalid." % (address, value))
 
 # ------- Sweep Commands:
@@ -254,8 +254,8 @@ def WCommand_ScanBScans(numScans = "default_value"):
 #
 def WCommand_ScanPulseDelay(duration = "default_value"):
     if(duration != "default_value"):
-        microseconds = integer(round(duration.to(unitRegistry.microsecond).magnitude))
-        if(isinstance(microseconds, integer) and (microseconds >= 3)):
+        microseconds = int(round(duration.to(unitRegistry.microsecond).magnitude))
+        if(isinstance(microseconds, int) and (microseconds >= 3)):
             return "delay %d" % (microseconds)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse delay %s is invalid." % (duration))
@@ -280,7 +280,7 @@ def WCommand_ScanPulseDelay(duration = "default_value"):
 def WCommand_ScanPulseDuration(duration = "default_value"):
     if(duration != "default_value"):
         microseconds = round(duration.to(unitRegistry.microsecond).magnitude)
-        if (isinstance(microseconds, integer) and microseconds >= 0 and microseconds <= 605535):
+        if (isinstance(microseconds, int) and microseconds >= 0 and microseconds <= 605535):
             return "pulse %d" % (microseconds)
         else:
             raise ValueError("Serial Error: Requested Wasatch pulse duration %s is invalid." % (duration))
@@ -307,7 +307,7 @@ def WCommand_ScanPulseDuration(duration = "default_value"):
 #
 def WCommand_ScanTriggerDelayEnable(enable = "default_value"):
     if(enable != "default_value"):
-        if isinstance(enable, integer) and (enable == 0 or enable == 1):
+        if isinstance(enable, int) and (enable == 0 or enable == 1):
             return "trdmode %d" % (enable)
         else:
             raise ValueError("Serial Error: Requested Wasatch trigger delay enable %s is invalid." % (enable))
@@ -477,10 +477,10 @@ def WCommand_ScanStop():
 #   String to be directly entered into the Wasatch terminal.
 #
 def WCommand_MotorSetTopSpeed(motorIdentifier = 'default_value'):
-    if(motorIdentifier != 'default_value')
-        if(motorIdentifier in MOTOR_IDENTIFIERS)
+    if(motorIdentifier != 'default_value'):
+        if(motorIdentifier in MOTOR_IDENTIFIERS):
             return "mmset %s" % (motorIdentifier)
-        else
+        else:
             ValueError("Serial Error: Requested Wasatch motor top speed for %s is invalid." % (motorIdentifier))
     return "mmset"
 
@@ -502,10 +502,10 @@ def WCommand_MotorSetTopSpeed(motorIdentifier = 'default_value'):
 #   String to be directly entered into the Wasatch terminal.
 #
 def WCommand_MotorSetTopAcceleration(motorIdentifier = 'default_value'):
-    if(motorIdentifier != 'default_value')
-        if(motorIdentifier in MOTOR_IDENTIFIERS)
+    if(motorIdentifier != 'default_value'):
+        if(motorIdentifier in MOTOR_IDENTIFIERS):
             return "maset %s" % (motorIdentifier)
-        else
+        else:
             ValueError("Serial Error: Requested Wasatch motor top acceleration for %s is invalid." % (motorIdentifier))
     return "maset"
 
@@ -526,9 +526,9 @@ def WCommand_MotorSetTopAcceleration(motorIdentifier = 'default_value'):
 #   String to be directly entered into the Wasatch serial terminal.
 #
 def WCommand_MotorGoAbsolute(motorIdentifier, value):
-    if(motorIdentifier in MOTOR_IDENTIFIERS and isInstance(value.magnitude, float))
+    if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(value.magnitude, float)):
         return "mgr %s %d" % (motorIdentifier, WConvert_FromMM(value))
-    else
+    else:
         ValueError("Serial Error: Requested Wasatch motor travel distance %s is invalid." % (motorIdentifier))
 
 #
@@ -547,9 +547,9 @@ def WCommand_MotorGoAbsolute(motorIdentifier, value):
 #   String to be directly entered into the Wasatch serial terminal.
 #
 def WCommand_MotorGoAbsolute(motorIdentifier, value):
-    if(motorIdentifier in MOTOR_IDENTIFIERS and isInstance(value.magnitude, float))
+    if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(value.magnitude, float)):
         return "mg2 %s %d" % (motorIdentifier, WConvert_FromMM(value))
-    else
+    else:
         ValueError("Serial Error: Requested Wasatch motor travel distance %s is invalid." % (motorIdentifier))
 
 #
@@ -569,10 +569,10 @@ def WCommand_MotorGoAbsolute(motorIdentifier, value):
 #   String to be entered directly into the Wasatch serial terminal.
 #
 def WCommand_MotorHome(motorIdentifier = 'a'):
-    if(motorIdentifier != 'a')
-        if(motorIdentifier in MOTOR_IDENTIFIERS)
+    if(motorIdentifier != 'a'):
+        if(motorIdentifier in MOTOR_IDENTIFIERS):
             return "mgh %s" % (motorIdentifier)
-        else
+        else:
             ValueError("Serial Error: Requested Wasatch motor to home %s is invalid." % (motorIdentifier))
     return "mgh a"
 
@@ -594,7 +594,7 @@ def WCommand_MotorHome(motorIdentifier = 'a'):
 #   String to be directly entered into the Wasatch serial terminal.
 #
 def WCommand_MotorDirection(motorIdentifier, value = 0):
-    if(motorIdentifier in MOTOR_IDENTIFIERS and isInstance(value, int))
+    if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(value, int)):
         return "mgd %s %d" % (motorIdentifier, value)
     ValueError("Serial Error: Requested Wasatch motor %s or direction %s is invalid." % (motorIdentifier, value))
 
@@ -613,10 +613,10 @@ def WCommand_MotorDirection(motorIdentifier, value = 0):
 #   String to enter directly into the Wasatch terminal.
 #
 def WCommand_MotorStop(motorIdentifier = 'a'):
-    if(motorIdentifier != 'a')
-        if(motorIdentifier in MOTOR_IDENTIFIERS)
+    if(motorIdentifier != 'a'):
+        if(motorIdentifier in MOTOR_IDENTIFIERS):
             return "mstop %s" % (motorIdentifier)
-        else
+        else:
             ValueError("Serial Error: Requested Wasatch motor halt for %s is invalid." % (motorIdentifier))
     return "mstop a"
 
@@ -648,9 +648,9 @@ def WCommand_MotorGetInfo():
 #   String to enter directly into the Wasatch terminal.
 #
 def WCommand_MotorIsHome(motorIdentifier = 'a'):
-    if(motorIdentifier != 'a')
-        if(motorIdentifier in MOTOR_IDENTIFIERS)
+    if(motorIdentifier != 'a'):
+        if(motorIdentifier in MOTOR_IDENTIFIERS):
             return "mih %s" % (motorIdentifier)
-        else
+        else:
             ValueError("Serial Error: Requested Wasatch motor home status for %s is invalid." % (motorIdentifier))
     return "mih a"

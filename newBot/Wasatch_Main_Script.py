@@ -45,8 +45,8 @@ microscopeCommand = Wasatch_Serial_Interface_DirectSerial()
 #    GCommand_BleachLine(microscopeCommand, (lineXPosition, 5.0-lineHeight/2), (lineXPosition, 5.0+lineHeight/2), exposure)
 print("Drawing grid")
 #GCommand_BleachGrid(microscopeCommand, (0 * unitRegistry.millimeters, 0 * unitRegistry.millimeters), 30, 0, 100 * unitRegistry.micrometer, 0 * unitRegistry.millimeter, 5 * unitRegistry.millimeter, 0 * unitRegistry.millimeter, 1 * unitRegistry.second)
-#GCommand_TestGrid(microscopeCommand, (5000, 5000), 100, 1, 200, 1, 2 * unitRegistry.seconds)
-GCommand_TestBars(microscopeCommand, (5000, 5000), 50, 200, 10000, 1 * unitRegistry.second)
-    
+GCommand_TestGrid(microscopeCommand, (5000, 5000), 50, 100, 400, 200, 2 * unitRegistry.seconds)
+#GCommand_TestBars(microscopeCommand, (5000, 5000), 50, 200, 10000, 1 * unitRegistry.second)
+print("Done!")
 #--> Closes connection:
 microscopeCommand.close()
