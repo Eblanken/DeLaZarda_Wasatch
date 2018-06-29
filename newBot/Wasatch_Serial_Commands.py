@@ -500,7 +500,9 @@ def WCommand_ScanTriggerDelayEnable(enable = "default_value"):
 #
 def WCommand_ScanXRamp(startX, stopX, bRepeats = 1):
     if(isinstance(startX.magnitude, float) and isinstance(stopX.magnitude, float) and isinstance(bRepeats, int)):
-        return "xramp %d %d %d" % (WConvert_FromMM(startX.magnitude), WConvert_FromMM(stopX.magnitude), bRepeats)
+        startPoint = WConvert_PointToCenteredInput((startX, 0 * unitRegistry.millimeter))
+        stopPoint = WConvert_PointToCenteredInput((stopX, 0 * unitRegistry.millimeter))
+        return "xramp %d %d %d" % (startPoint[0], stopPoint[0], bRepeats)
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
 
@@ -522,7 +524,9 @@ def WCommand_ScanXRamp(startX, stopX, bRepeats = 1):
 #
 def WCommand_ScanYRamp(startY, stopY, bRepeats = 1):
     if(isinstance(startX.magnitude, float) and isinstance(stopY.magnitude, float) and isinstance(bRepeats, int)):
-        return "yramp %d %d %d" % (WConvert_FromMM(startY.magnitude), WConvert_FromMM(stopY.magnitude), bRepeats)
+        startPoint = WConvert_PointToCenteredInput((0 * unitRegistry.millimeter, startY))
+        stopPoint = WConvert_PointToCenteredInput((0 * unitRegistry.millimeter, stopY))
+        return "yramp %d %d %d" % (startPoint[1], stopPoint[1], bRepeats)
     else:
         raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
 
@@ -546,20 +550,21 @@ def WCommand_ScanYRamp(startY, stopY, bRepeats = 1):
 #
 def WCommand_ScanXYRamp(startPoint, stopPoint, bRepeats = 1):
     if(isinstance(startPoint[0].magnitude, float) and isinstance(stopPoint[0].magnitude, float) and isinstance(startPoint[1].magnitude, float) and isinstance(stopPoint[1].magnitude, float), isinstance(bRepeats, int)):
-        return "xy_ramp %d %d %d %d %d" % (WConvert_FromMM(startPoint)[0].magnitude, WConvert_FromMM(stopPoint)[0].magnitude, WConvert_FromMM(startPoint)[1].magnitude, WConvert_FromMM(stopPoint)[1].magnitude, bRepeats)
-    else:
-        raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
+        convertedStartPoint = WConvert_PointToCenteredInput(startPoint)
+        convertedStopPoint = WConvert_PointToCenteredInput(stopPoint)
+        return "xy_ramp %d %d %d %d %d" % (convertedStartPoint[0], convertedStopPoint[0], convertedStartPoint[1], convertedStopPoint[1], bRepeats)
+    raise ValueError("Serial Error: Requested Wasatch coordinates are invalid.")
 
 #
-# Description: # TODO Serial_Commands: polar ramp
+# Description:
 #   Draws a polar ramp (concentric circular scan).
+#   Note: Set the number of scanned points per circle with A_scans, set
+#   the number of concentric cirles with B_scans.
 #
 # Parameters:
 #   'centerPoint'    (Tuple of Floats) ([Length]) The center of the scan of the form (x, y)
 #   'radius'         (Float) ([Length])           The radius of the scanned region
-#   'rings'          (Integer)                    The number of concentric scanned circles.
-#   'pointsPerRing'  (Integer)                    The number of data points per scanned circle.
-#   'ringRepeats'    (Integer)                    The number of times to repeat each layer
+#   'ringRepeats'    (Integer) (optional)         The number of times to repeat each layer
 #                                                 of the scan, defaults to 1.
 #
 # Response:
@@ -568,8 +573,12 @@ def WCommand_ScanXYRamp(startPoint, stopPoint, bRepeats = 1):
 # Returns:
 #   String to be entered directly into the Wasatch serial terminal.
 #
-def WCommand_ScanPolar(centerPoint, radius, rings, pointsPerRing, ringRepeats = 1):
-    raise ValueError("Serial Error: Polar ramp not implimented.") # TODO
+def WCommand_ScanPolar(centerPoint, radius, ringRepeats = 1):
+    if(isInstance(centerPoint[0].magnitude, float) and isInstance(centerPoint[1].magnitude, float) and isInstance(radius, float) and isInstance(ringRepeats, int)):
+        convertedCenter = WConvert_PointToCenteredInput(centerPoint)
+        return "pramp %d %d %d %d" % (convertedCenter[0], convertedCenter[1], WConvert_PointToCenteredInput(radius, 0)[0], ringRepeats) #TODO Serial_Commands: Single element conversion
+    else:
+        raise ValueError("Serial Error: Polar ramp with center point %s %s, radius %s, and repeats %s, is invalid." % (centerPoint[0], centerPoint[1], radius, ringRepeats))
 
 #
 # Description: # TODO Serial_Commands: spiral
@@ -585,8 +594,12 @@ def WCommand_ScanPolar(centerPoint, radius, rings, pointsPerRing, ringRepeats = 
 # Returns:
 #   String to be entered directly into the Wasatch serial terminal.
 #
-def WCommand_ScanSpiral():
-    raise ValueError("Serial Error: Spiral ramp not implimented.") # TODO
+def WCommand_ScanSpiral(centerPoint, radius):
+    if(isInstance(centerPoint[0].magnitude, float) and isInstance(centerPoint[1].magnitude, float) and isInstance(radius, float)):
+        convertedCenter = WConvert_PointToCenteredInput(centerPoint)
+        return "pramp %d %d %d %d" % (convertedCenter[0], convertedCenter[1], WConvert_PointToCenteredInput(radius, 0)[0]) #TODO Serial_Commands: Single element conversion
+    else:
+        raise ValueError("Serial Error: Polar ramp with center point %s %s, radius %s, and repeats %s, is invalid." % (centerPoint[0], centerPoint[1], radius, ringRepeats))
 
 #
 # Description:
@@ -719,7 +732,7 @@ def WCommand_MotorSetTopAcceleration(motorIdentifier, value = "default_value"):
 #
 def WCommand_MotorGoAbsolute(motorIdentifier, value):
     if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(value.magnitude, float)):
-        return "mgr %s %d" % (motorIdentifier, WConvert_FromMM(value))
+        return "mgr %s %d" % (motorIdentifier, WConvert_PointToCenteredInput(value))
     else:
         ValueError("Serial Error: Requested Wasatch motor travel distance %s is invalid." % (motorIdentifier))
 
@@ -740,7 +753,7 @@ def WCommand_MotorGoAbsolute(motorIdentifier, value):
 #
 def WCommand_MotorGoAbsolute(motorIdentifier, value):
     if(motorIdentifier in MOTOR_IDENTIFIERS and isinstance(value.magnitude, float)):
-        return "mg2 %s %d" % (motorIdentifier, WConvert_FromMM(value))
+        return "mg2 %s %d" % (motorIdentifier, WConvert_PointToCenteredInput(value))
     else:
         ValueError("Serial Error: Requested Wasatch motor travel distance %s is invalid." % (motorIdentifier))
 

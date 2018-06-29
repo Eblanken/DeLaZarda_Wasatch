@@ -48,12 +48,12 @@ DUTY_CYCLE = 0.75 # Percentage of on time for pulses, this is the assumed duty c
 #   wide?
 #
 # Parameters:
-#   'inputPoint' A tuple of floats that has pint compatable units of length
+#   'inputPoint' (Float) ([length]) A tuple of floats that has pint compatable units of length
 #
 # Returns:
 #   The function returns a tuple with wasatch units
 #
-def WConvert_FromMM(inputPoint):
+def WConvert_PointToCenteredInput(inputPoint):
     val = ((((inputPoint[0].to(unitRegistry.millimeter) + (MM_X / 2.0)) * ((MAX_X - MIN_X) / MM_X)) + MIN_X), ((inputPoint[1].to(unitRegistry.millimeters) + (MM_Y / 2.0)).to(unitRegistry.millimeters) * ((MAX_Y - MIN_Y) / MM_Y)) + MIN_Y)
     return val
 

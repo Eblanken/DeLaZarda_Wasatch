@@ -46,7 +46,7 @@ colDiffs = []; % format is [xPositionGlobal, differenceMagnitude, sourceRowIndex
 rowDiffs = []; % format is [yPositionGlobal, differenceMagnitude, sourceColumnIndex]
 for rowIndex = 1:numRows
     for colIndex = 1:numCols
-        fileString = sprintf('/Users/ANoSenseSolution/Documents/MATLAB/DeLaZerda/Writer/NewScans/R%d_C%d.tif', rowIndex, colIndex);
+        fileString = sprintf('/Users/ANoSenseSolution/Desktop/Research/DeLaZarda/WasatchMicroscopeWriter/calibration/#0/R%d_C%d.tif', rowIndex, colIndex);
         if(exist(fileString, 'file'))
             image = imread(fileString);
             normedData = image; %(image)./((max(max(image)))/255);
@@ -115,22 +115,26 @@ for rowIndex = 1:numRows
         end
     end
 end
+
 % Plots spacing tolerance
-figure
+figure;
 hold on;
-colDifferences = ((colDiffs(:,2))./wUnits_Cols).^-1;
-rowDifferences = ((rowDiffs(:,2))./wUnits_Rows).^-1;
-range = min([colDifferences; rowDifferences]):1:max([colDifferences; rowDifferences]);
+colDifferences = ((ones(length(colDiffs), 1) * wUnits_Cols) ./ colDiffs(:,2));
+rowDifferences = ((ones(length(rowDiffs), 1) * wUnits_Rows) ./ rowDiffs(:,2));
+range = (min([colDifferences; rowDifferences]):1:max([colDifferences; rowDifferences]))';
+% -> Columns
 pd_col = fitdist(colDifferences,'Kernel','Kernel','epanechnikov');
 y_col = pdf(pd_col, range);
 plot(range, y_col, 'LineWidth', 2, 'displayName', 'Column Spacing (Wasatch Units / MM)');
-%pd_row = fitdist(rowDifferences,'Kernel','Kernel','epanechnikov');
-%y_row = pdf(pd_row, range);
-%plot(range,y_row,'LineWidth',2, 'displayName', 'Row Spacing (Wasatch Units / MM)');
+% -> Rows
+pd_row = fitdist(rowDifferences,'Kernel','Kernel','epanechnikov');
+y_row = pdf(pd_row, range);
+plot(range, y_row, 'LineWidth', 2, 'displayName', 'Row Spacing (Wasatch Units / MM)');
+% -> Plots
 legend('show');
 xlabel('Wasatch Units');
 ylabel('Density');
-title('Averaged Wasatch Units / MM From Line Division Data');
+title('Wasatch Units / MM From Line Division Data');
 hold off;
 
 % Plots spatial distribution of spacing
@@ -148,7 +152,6 @@ legend('show');
 xlabel('X Position (mm)');
 ylabel('Difference (mm)');
 hold off;
-
 % -> Rows
 figure;
 hold on;
@@ -158,6 +161,7 @@ for index = 1:numCols
     labelText = sprintf('Column %d', index);
     plot(curLocations, curSpaces, 'displayName', labelText);
 end
+% -> Plot Properties
 title('Spacing In MM Over Row Range');
 legend('show');
 xlabel('Y Position (mm)');
