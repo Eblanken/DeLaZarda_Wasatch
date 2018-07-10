@@ -13,7 +13,7 @@
 
 from Wasatch_Serial_Commands import *
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
-from units import *
+from Wasatch_Units import *
 
 #------------------------ Function Definitions ---------------------------------
 
@@ -133,7 +133,7 @@ def GCommand_TestBars(microscopeCommand, startPoint, columns, colSpacing, colLen
 #   ''
 #   'duration'          (integer) ([Time])        Dwell time per line
 #
-def GCommand_BleachGrid(microscopeCommand, centerPoint, columns, rows, colSpacing, rowSpacing, colLength, rowLength, duration):  
+def GCommand_BleachGrid(microscopeCommand, centerPoint, columns, rows, colSpacing, rowSpacing, colLength, rowLength, duration):
     microscopeCommand.sendCommand(WCommand_ScanPulseDuration(WConvert_PulseDuration()))
     microscopeCommand.sendCommand(WCommand_ScanPulseDelay(WConvert_PulseDelay()))
     microscopeCommand.sendCommand(WCommand_ScanAScans(WConvert_PulsesPerSweep()))
@@ -142,7 +142,7 @@ def GCommand_BleachGrid(microscopeCommand, centerPoint, columns, rows, colSpacin
         GCommand_BleachLine(microscopeCommand, (centerPoint[0] + (colIndex - columns / 2) * colSpacing, centerPoint[1] + colLength / 2), (centerPoint[0] + (colIndex - columns / 2) * colSpacing, centerPoint[1] - colLength / 2), duration)
     for rowIndex in range(0, rows):
         GCommand_BleachLine(microscopeCommand, (centerPoint[0] - rowLength / 2, centerPoint[1] + (rowIndex - rows / 2)), (centerPoint[0] + rowLength / 2, centerPoint[1] + (rowIndex - rows / 2)), duration)
-    
+
 #
 # Description:
 #  Sets the scanner to continuously draw a 3d volumetric scan.

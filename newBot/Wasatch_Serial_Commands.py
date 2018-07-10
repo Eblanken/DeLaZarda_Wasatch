@@ -12,7 +12,7 @@
 #---------------------- Included Libraries -------------------------------------
 
 from Wasatch_Conversions import *
-from units import *
+from Wasatch_Units import *
 
 #--------------------------- Constants -----------------------------------------
 
@@ -582,7 +582,7 @@ def WCommand_ScanPolar(centerPoint, radius, ringRepeats = 1):
 
 #
 # Description: # TODO Serial_Commands: spiral
-#   Draws a polar ramp (concentric circular scan).
+#   Draws an archimedes spiral. You set the number of samples per spiral with the
 #
 # Parameters:
 #   'centerPoint'    (Tuple of Floats) ([Length]) The center of the scan of the form (x, y)

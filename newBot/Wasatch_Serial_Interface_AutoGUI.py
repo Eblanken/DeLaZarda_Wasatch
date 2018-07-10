@@ -15,7 +15,7 @@ import time
 
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_GUI_Commands import *
-from units import *
+from Wasatch_Units import *
 
 #------------------------ Class Definition -------------------------------------
 

@@ -14,11 +14,11 @@
 #----------------------- Imported Libraries ------------------------------------
 
 import tkinter
-import units
 
 from Wasatch_Controller_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
+from Wasatch_Units import *
 
 # ---------------------- Function Definitions ----------------------------------
 

@@ -15,7 +15,8 @@
 #----------------------- Imported Libraries -----------------------------------
 
 import math
-from units import *
+
+from Wasatch_Units import *
 
 #---------------------------- Constants ---------------------------------------
 

@@ -16,6 +16,8 @@
 import pyautogui
 import time
 
+from Wasatch_Units import *
+
 #--------------------------- Constants -----------------------------------------
 ATTEMPTS = 5
 

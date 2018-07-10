@@ -14,7 +14,7 @@
 from Wasatch_Main_Commands import *
 from Wasatch_Serial_Interface_AutoGUI import Wasatch_Serial_Interface_AutoGUI
 from Wasatch_Serial_Interface_DirectSerial import Wasatch_Serial_Interface_DirectSerial
-from units import *
+from Wasatch_Units import *
 
 #--------------------------- The Script ----------------------------------------
 

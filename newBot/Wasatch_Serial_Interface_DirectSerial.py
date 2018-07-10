@@ -33,7 +33,7 @@ import time
 from serial.tools import list_ports
 from Wasatch_Serial_Interface_Abstract import Wasatch_Serial_Interface_Abstract
 from Wasatch_Serial_Commands import *
-from units import *
+from Wasatch_Units import *
 
 #------------------------ Class Definition -------------------------------------
 
